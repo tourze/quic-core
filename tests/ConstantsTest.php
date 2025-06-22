@@ -199,8 +199,6 @@ class ConstantsTest extends TestCase
     public function testGetDefaultTransportParameters(): void
     {
         $params = Constants::getDefaultTransportParameters();
-        
-        $this->assertIsArray($params);
         $this->assertArrayHasKey('max_idle_timeout', $params);
         $this->assertArrayHasKey('max_udp_payload_size', $params);
         $this->assertArrayHasKey('initial_max_data', $params);

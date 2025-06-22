@@ -18,7 +18,7 @@ class CryptoException extends QuicException
      */
     public static function bufferExceeded(string $details = ''): self
     {
-        $message = '加密缓冲区溢出' . ($details ? ": {$details}" : '');
+        $message = '加密缓冲区溢出' . ($details !== '' ? ": {$details}" : '');
         return new self($message, QuicError::CRYPTO_BUFFER_EXCEEDED);
     }
 
@@ -27,7 +27,7 @@ class CryptoException extends QuicException
      */
     public static function keyUpdateError(string $details = ''): self
     {
-        $message = '密钥更新错误' . ($details ? ": {$details}" : '');
+        $message = '密钥更新错误' . ($details !== '' ? ": {$details}" : '');
         return new self($message, QuicError::KEY_UPDATE_ERROR);
     }
 
@@ -36,7 +36,7 @@ class CryptoException extends QuicException
      */
     public static function aeadLimitReached(string $details = ''): self
     {
-        $message = 'AEAD限制达到' . ($details ? ": {$details}" : '');
+        $message = 'AEAD限制达到' . ($details !== '' ? ": {$details}" : '');
         return new self($message, QuicError::AEAD_LIMIT_REACHED);
     }
 
@@ -45,7 +45,7 @@ class CryptoException extends QuicException
      */
     public static function cryptoError(string $details = ''): self
     {
-        $message = '加密错误' . ($details ? ": {$details}" : '');
+        $message = '加密错误' . ($details !== '' ? ": {$details}" : '');
         return new self($message, QuicError::CRYPTO_ERROR);
     }
 } 

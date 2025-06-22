@@ -18,7 +18,7 @@ class ConnectionException extends QuicException
      */
     public static function refused(string $reason = ''): self
     {
-        $message = '连接被拒绝' . ($reason ? ": {$reason}" : '');
+        $message = '连接被拒绝' . ($reason !== '' ? ": {$reason}" : '');
         return new self($message, QuicError::CONNECTION_REFUSED);
     }
 
@@ -27,7 +27,7 @@ class ConnectionException extends QuicException
      */
     public static function protocolViolation(string $details = ''): self
     {
-        $message = '协议违规' . ($details ? ": {$details}" : '');
+        $message = '协议违规' . ($details !== '' ? ": {$details}" : '');
         return new self($message, QuicError::PROTOCOL_VIOLATION);
     }
 
@@ -36,7 +36,7 @@ class ConnectionException extends QuicException
      */
     public static function internalError(string $details = ''): self
     {
-        $message = '内部错误' . ($details ? ": {$details}" : '');
+        $message = '内部错误' . ($details !== '' ? ": {$details}" : '');
         return new self($message, QuicError::INTERNAL_ERROR);
     }
 
@@ -45,7 +45,7 @@ class ConnectionException extends QuicException
      */
     public static function invalidToken(string $details = ''): self
     {
-        $message = '无效令牌' . ($details ? ": {$details}" : '');
+        $message = '无效令牌' . ($details !== '' ? ": {$details}" : '');
         return new self($message, QuicError::INVALID_TOKEN);
     }
 
@@ -54,7 +54,7 @@ class ConnectionException extends QuicException
      */
     public static function connectionIdLimit(string $details = ''): self
     {
-        $message = '连接ID限制' . ($details ? ": {$details}" : '');
+        $message = '连接ID限制' . ($details !== '' ? ": {$details}" : '');
         return new self($message, QuicError::CONNECTION_ID_LIMIT_ERROR);
     }
 
@@ -63,7 +63,7 @@ class ConnectionException extends QuicException
      */
     public static function noViablePath(string $details = ''): self
     {
-        $message = '无可用路径' . ($details ? ": {$details}" : '');
+        $message = '无可用路径' . ($details !== '' ? ": {$details}" : '');
         return new self($message, QuicError::NO_VIABLE_PATH);
     }
 } 

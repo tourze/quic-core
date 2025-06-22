@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Enum;
 
+use Tourze\EnumExtra\Itemable;
+use Tourze\EnumExtra\ItemTrait;
+use Tourze\EnumExtra\Labelable;
+use Tourze\EnumExtra\Selectable;
+use Tourze\EnumExtra\SelectTrait;
+
 /**
  * QUIC包类型枚举
  * 
  * 定义QUIC包的各种类型及其特性
  * 参考：https://tools.ietf.org/html/rfc9000#section-17
  */
-enum PacketType: int
+enum PacketType: int implements Itemable, Labelable, Selectable
 {
+    use ItemTrait;
+    use SelectTrait;
     case INITIAL = 0x00;
     case ZERO_RTT = 0x01;
     case HANDSHAKE = 0x02;
@@ -125,5 +133,13 @@ enum PacketType: int
             self::RETRY => 0x03,
             self::VERSION_NEGOTIATION => 0x00, // 版本协商包的特殊处理
         };
+    }
+
+    /**
+     * 获取标签 (EnumExtra 接口要求)
+     */
+    public function getLabel(): string
+    {
+        return $this->getDescription();
     }
 } 

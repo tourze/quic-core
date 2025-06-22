@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Enum;
 
+use Tourze\EnumExtra\Itemable;
+use Tourze\EnumExtra\ItemTrait;
+use Tourze\EnumExtra\Labelable;
+use Tourze\EnumExtra\Selectable;
+use Tourze\EnumExtra\SelectTrait;
+
 /**
  * QUIC帧类型枚举
  * 
  * 根据RFC 9000定义的所有QUIC帧类型
  * 参考：https://tools.ietf.org/html/rfc9000#section-12.4
  */
-enum FrameType: int
+enum FrameType: int implements Itemable, Labelable, Selectable
 {
+    use ItemTrait;
+    use SelectTrait;
     case PADDING = 0x00;
     case PING = 0x01;
     case ACK = 0x02;
@@ -227,5 +235,13 @@ enum FrameType: int
             self::PONG => 'PONG帧',
             self::PREFERRED_ADDRESS => '首选地址帧',
         };
+    }
+
+    /**
+     * 获取标签 (EnumExtra 接口要求)
+     */
+    public function getLabel(): string
+    {
+        return $this->getDescription();
     }
 }

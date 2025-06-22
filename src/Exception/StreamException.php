@@ -18,7 +18,7 @@ class StreamException extends QuicException
      */
     public static function stateError(string $details = ''): self
     {
-        $message = '流状态错误' . ($details ? ": {$details}" : '');
+        $message = '流状态错误' . ($details !== '' ? ": {$details}" : '');
         return new self($message, QuicError::STREAM_STATE_ERROR);
     }
 
@@ -27,7 +27,7 @@ class StreamException extends QuicException
      */
     public static function limitError(string $details = ''): self
     {
-        $message = '流限制错误' . ($details ? ": {$details}" : '');
+        $message = '流限制错误' . ($details !== '' ? ": {$details}" : '');
         return new self($message, QuicError::STREAM_LIMIT_ERROR);
     }
 
@@ -36,7 +36,7 @@ class StreamException extends QuicException
      */
     public static function finalSizeError(string $details = ''): self
     {
-        $message = '最终大小错误' . ($details ? ": {$details}" : '');
+        $message = '最终大小错误' . ($details !== '' ? ": {$details}" : '');
         return new self($message, QuicError::FINAL_SIZE_ERROR);
     }
 
@@ -45,7 +45,7 @@ class StreamException extends QuicException
      */
     public static function flowControlError(string $details = ''): self
     {
-        $message = '流量控制错误' . ($details ? ": {$details}" : '');
+        $message = '流量控制错误' . ($details !== '' ? ": {$details}" : '');
         return new self($message, QuicError::FLOW_CONTROL_ERROR);
     }
 } 

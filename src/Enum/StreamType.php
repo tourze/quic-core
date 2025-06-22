@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Enum;
 
+use Tourze\EnumExtra\Itemable;
+use Tourze\EnumExtra\ItemTrait;
+use Tourze\EnumExtra\Labelable;
+use Tourze\EnumExtra\Selectable;
+use Tourze\EnumExtra\SelectTrait;
+
 /**
  * QUIC流类型枚举
  * 
  * 定义QUIC流的类型和特性
  * 参考：https://tools.ietf.org/html/rfc9000#section-2.1
  */
-enum StreamType: int
+enum StreamType: int implements Itemable, Labelable, Selectable
 {
+    use ItemTrait;
+    use SelectTrait;
     case CLIENT_BIDI = 0x00;    // 客户端发起的双向流
     case SERVER_BIDI = 0x01;    // 服务端发起的双向流
     case CLIENT_UNI = 0x02;     // 客户端发起的单向流
@@ -85,5 +93,13 @@ enum StreamType: int
             self::CLIENT_UNI => '客户端单向流',
             self::SERVER_UNI => '服务端单向流',
         };
+    }
+
+    /**
+     * 获取标签 (EnumExtra 接口要求)
+     */
+    public function getLabel(): string
+    {
+        return $this->getDescription();
     }
 }

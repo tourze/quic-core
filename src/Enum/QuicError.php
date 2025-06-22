@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Enum;
 
+use Tourze\EnumExtra\Itemable;
+use Tourze\EnumExtra\ItemTrait;
+use Tourze\EnumExtra\Labelable;
+use Tourze\EnumExtra\Selectable;
+use Tourze\EnumExtra\SelectTrait;
+
 /**
  * QUIC错误码枚举
  * 
  * 根据RFC 9000定义的所有QUIC错误类型
  * 参考：https://tools.ietf.org/html/rfc9000#section-20
  */
-enum QuicError: int
+enum QuicError: int implements Itemable, Labelable, Selectable
 {
+    use ItemTrait;
+    use SelectTrait;
     case NO_ERROR = 0x0;
     case INTERNAL_ERROR = 0x1;
     case CONNECTION_REFUSED = 0x2;
@@ -103,5 +111,13 @@ enum QuicError: int
             self::NO_VIABLE_PATH => '无可用路径',
             self::CRYPTO_ERROR => '加密错误',
         };
+    }
+
+    /**
+     * 获取标签 (EnumExtra 接口要求)
+     */
+    public function getLabel(): string
+    {
+        return $this->getDescription();
     }
 } 

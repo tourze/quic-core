@@ -17,7 +17,7 @@ final class VariableInteger
 {
     /**
      * 编码变长整数
-     * 
+     *
      * @param int $value 要编码的整数值 (0 <= value <= 2^62-1)
      * @return string 编码后的字节串
      * @throws InvalidArgumentException 当值超出范围时抛出异常
@@ -55,7 +55,7 @@ final class VariableInteger
 
     /**
      * 解码变长整数
-     * 
+     *
      * @param string $data 要解码的字节串
      * @param int $offset 解码开始的偏移量
      * @return array{0: int, 1: int} [解码得到的值, 消耗的字节数]
@@ -109,7 +109,7 @@ final class VariableInteger
 
     /**
      * 获取编码指定值所需的字节数
-     * 
+     *
      * @param int $value 要编码的值
      * @return int 所需的字节数 (1, 2, 4, 或 8)
      * @throws InvalidArgumentException 当值超出范围时抛出异常
@@ -141,7 +141,7 @@ final class VariableInteger
 
     /**
      * 检查数据中是否有完整的变长整数
-     * 
+     *
      * @param string $data 要检查的数据
      * @param int $offset 检查开始的偏移量
      * @return bool 是否有完整的变长整数
@@ -168,7 +168,7 @@ final class VariableInteger
 
     /**
      * 获取变长整数的编码类型
-     * 
+     *
      * @param string $data 数据
      * @param int $offset 偏移量
      * @return int 编码类型 (0=1字节, 1=2字节, 2=4字节, 3=8字节)
@@ -187,7 +187,7 @@ final class VariableInteger
 
     /**
      * 批量编码多个变长整数
-     * 
+     *
      * @param array<int> $values 要编码的值数组
      * @return string 编码后的字节串
      */
@@ -202,7 +202,7 @@ final class VariableInteger
 
     /**
      * 批量解码多个变长整数
-     * 
+     *
      * @param string $data 要解码的数据
      * @param int $count 要解码的变长整数个数
      * @param int $offset 开始偏移量

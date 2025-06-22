@@ -4,13 +4,21 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Enum;
 
+use Tourze\EnumExtra\Itemable;
+use Tourze\EnumExtra\ItemTrait;
+use Tourze\EnumExtra\Labelable;
+use Tourze\EnumExtra\Selectable;
+use Tourze\EnumExtra\SelectTrait;
+
 /**
  * TLS连接状态枚举
  * 
  * 定义TLS握手过程中的状态
  */
-enum TLSState: string
+enum TLSState: string implements Itemable, Labelable, Selectable
 {
+    use ItemTrait;
+    use SelectTrait;
     case START = 'start';
     case WAIT_CLIENT_HELLO = 'wait_client_hello';
     case WAIT_SERVER_HELLO = 'wait_server_hello';
@@ -65,5 +73,13 @@ enum TLSState: string
             self::CONNECTED => '已连接',
             self::CLOSED => '已关闭',
         };
+    }
+
+    /**
+     * 获取标签 (EnumExtra 接口要求)
+     */
+    public function getLabel(): string
+    {
+        return $this->getDescription();
     }
 }

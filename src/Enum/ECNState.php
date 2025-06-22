@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Enum;
 
+use Tourze\EnumExtra\Itemable;
+use Tourze\EnumExtra\ItemTrait;
+use Tourze\EnumExtra\Labelable;
+use Tourze\EnumExtra\Selectable;
+use Tourze\EnumExtra\SelectTrait;
+
 /**
  * ECN（Explicit Congestion Notification）状态枚举
  * 
  * 定义ECN功能的验证状态
  * 参考：https://tools.ietf.org/html/rfc9000#section-13.4
  */
-enum ECNState: string
+enum ECNState: string implements Itemable, Labelable, Selectable
 {
+    use ItemTrait;
+    use SelectTrait;
     case TESTING = 'testing';     // 正在测试ECN功能
     case UNKNOWN = 'unknown';     // ECN状态未知
     case CAPABLE = 'capable';     // ECN功能可用
@@ -52,5 +60,13 @@ enum ECNState: string
             self::CAPABLE => 'ECN功能可用',
             self::FAILED => 'ECN功能不可用',
         };
+    }
+
+    /**
+     * 获取标签 (EnumExtra 接口要求)
+     */
+    public function getLabel(): string
+    {
+        return $this->getDescription();
     }
 }

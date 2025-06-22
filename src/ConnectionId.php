@@ -17,7 +17,7 @@ final class ConnectionId
 {
     /**
      * 生成指定长度的连接ID
-     * 
+     *
      * @param int $length 连接ID长度，范围0-20字节
      * @return string 生成的连接ID
      * @throws InvalidArgumentException 当长度超出范围时抛出异常
@@ -39,19 +39,19 @@ final class ConnectionId
 
     /**
      * 验证连接ID是否合法
-     * 
+     *
      * @param string $connectionId 要验证的连接ID
      * @return bool 是否合法
      */
     public static function validate(string $connectionId): bool
     {
         $length = strlen($connectionId);
-        return $length >= Constants::MIN_CONNECTION_ID_LENGTH && $length <= Constants::MAX_CONNECTION_ID_LENGTH;
+        return $length <= Constants::MAX_CONNECTION_ID_LENGTH;
     }
 
     /**
      * 生成随机长度的连接ID
-     * 
+     *
      * @param int $minLength 最小长度，默认为4
      * @param int $maxLength 最大长度，默认为20
      * @return string 生成的连接ID
@@ -77,7 +77,7 @@ final class ConnectionId
 
     /**
      * 比较两个连接ID是否相等
-     * 
+     *
      * @param string $connectionId1 连接ID1
      * @param string $connectionId2 连接ID2
      * @return bool 是否相等
@@ -89,7 +89,7 @@ final class ConnectionId
 
     /**
      * 将连接ID转换为十六进制字符串表示
-     * 
+     *
      * @param string $connectionId 连接ID
      * @return string 十六进制字符串
      */
@@ -104,7 +104,7 @@ final class ConnectionId
 
     /**
      * 从十六进制字符串创建连接ID
-     * 
+     *
      * @param string $hex 十六进制字符串
      * @return string 连接ID
      * @throws InvalidArgumentException 当十六进制字符串无效时抛出异常
@@ -137,7 +137,7 @@ final class ConnectionId
 
     /**
      * 获取连接ID的长度
-     * 
+     *
      * @param string $connectionId 连接ID
      * @return int 长度
      */
@@ -148,7 +148,7 @@ final class ConnectionId
 
     /**
      * 判断连接ID是否为空
-     * 
+     *
      * @param string $connectionId 连接ID
      * @return bool 是否为空
      */
@@ -159,7 +159,7 @@ final class ConnectionId
 
     /**
      * 生成用于调试的连接ID字符串表示
-     * 
+     *
      * @param string $connectionId 连接ID
      * @return string 调试字符串
      */
@@ -176,7 +176,7 @@ final class ConnectionId
 
     /**
      * 批量生成多个连接ID
-     * 
+     *
      * @param int $count 生成数量
      * @param int $length 每个连接ID的长度
      * @return array<string> 连接ID数组
@@ -197,7 +197,7 @@ final class ConnectionId
 
     /**
      * 验证连接ID序列号（用于NEW_CONNECTION_ID帧）
-     * 
+     *
      * @param int $sequenceNumber 序列号
      * @return bool 是否有效
      */
@@ -208,7 +208,7 @@ final class ConnectionId
 
     /**
      * 生成状态重置令牌（与连接ID关联）
-     * 
+     *
      * @param string $connectionId 连接ID
      * @param string $secret 密钥（16字节）
      * @return string 16字节的重置令牌
@@ -227,7 +227,7 @@ final class ConnectionId
 
     /**
      * 验证重置令牌
-     * 
+     *
      * @param string $connectionId 连接ID
      * @param string $token 重置令牌
      * @param string $secret 密钥

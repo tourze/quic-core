@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Enum;
 
+use Tourze\EnumExtra\Itemable;
+use Tourze\EnumExtra\ItemTrait;
+use Tourze\EnumExtra\Labelable;
+use Tourze\EnumExtra\Selectable;
+use Tourze\EnumExtra\SelectTrait;
+
 /**
  * QUIC流接收状态枚举
  * 
  * 定义流接收端的状态机
  * 参考：https://tools.ietf.org/html/rfc9000#section-3.2
  */
-enum StreamRecvState: string
+enum StreamRecvState: string implements Itemable, Labelable, Selectable
 {
+    use ItemTrait;
+    use SelectTrait;
     case RECV = 'recv';                 // 可以接收数据
     case SIZE_KNOWN = 'size_known';     // 已知最终大小
     case DATA_RECVD = 'data_recvd';     // 已接收所有数据
@@ -63,5 +71,13 @@ enum StreamRecvState: string
             self::RESET_RECVD => '收到重置流',
             self::RESET_READ => '应用已读取重置',
         };
+    }
+
+    /**
+     * 获取标签 (EnumExtra 接口要求)
+     */
+    public function getLabel(): string
+    {
+        return $this->getDescription();
     }
 }

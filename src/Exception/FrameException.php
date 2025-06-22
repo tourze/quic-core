@@ -18,7 +18,7 @@ class FrameException extends QuicException
      */
     public static function encodingError(string $details = ''): self
     {
-        $message = '帧编码错误' . ($details ? ": {$details}" : '');
+        $message = '帧编码错误' . ($details !== '' ? ": {$details}" : '');
         return new self($message, QuicError::FRAME_ENCODING_ERROR);
     }
 
@@ -27,7 +27,7 @@ class FrameException extends QuicException
      */
     public static function transportParameterError(string $details = ''): self
     {
-        $message = '传输参数错误' . ($details ? ": {$details}" : '');
+        $message = '传输参数错误' . ($details !== '' ? ": {$details}" : '');
         return new self($message, QuicError::TRANSPORT_PARAMETER_ERROR);
     }
 } 

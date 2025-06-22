@@ -148,7 +148,6 @@ class ConnectionExceptionTest extends TestCase
         foreach ($exceptions as $exception) {
             $this->assertTrue($exception->isConnectionError());
             $this->assertFalse($exception->isApplicationError());
-            $this->assertIsString($exception->getErrorDescription());
         }
     }
 } 

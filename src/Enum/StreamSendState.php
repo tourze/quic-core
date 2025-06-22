@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Enum;
 
+use Tourze\EnumExtra\Itemable;
+use Tourze\EnumExtra\ItemTrait;
+use Tourze\EnumExtra\Labelable;
+use Tourze\EnumExtra\Selectable;
+use Tourze\EnumExtra\SelectTrait;
+
 /**
  * QUIC流发送状态枚举
  * 
  * 定义流发送端的状态机
  * 参考：https://tools.ietf.org/html/rfc9000#section-3.1
  */
-enum StreamSendState: string
+enum StreamSendState: string implements Itemable, Labelable, Selectable
 {
+    use ItemTrait;
+    use SelectTrait;
     case READY = 'ready';              // 准备发送
     case SEND = 'send';                // 正在发送
     case DATA_SENT = 'data_sent';      // 数据已发送
@@ -63,5 +71,13 @@ enum StreamSendState: string
             self::RESET_SENT => '已发送重置',
             self::RESET_RECVD => '已收到重置确认',
         };
+    }
+
+    /**
+     * 获取标签 (EnumExtra 接口要求)
+     */
+    public function getLabel(): string
+    {
+        return $this->getDescription();
     }
 }

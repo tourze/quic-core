@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Enum;
 
+use Tourze\EnumExtra\Itemable;
+use Tourze\EnumExtra\ItemTrait;
+use Tourze\EnumExtra\Labelable;
+use Tourze\EnumExtra\Selectable;
+use Tourze\EnumExtra\SelectTrait;
+
 /**
  * QUIC连接状态枚举
  * 
  * 定义QUIC连接的各种状态及其转换逻辑
  * 参考：https://tools.ietf.org/html/rfc9000#section-4
  */
-enum ConnectionState: string
+enum ConnectionState: string implements Itemable, Labelable, Selectable
 {
+    use ItemTrait;
+    use SelectTrait;
     case NEW = 'new';
     case HANDSHAKING = 'handshaking';
     case CONNECTED = 'connected';
@@ -134,5 +142,13 @@ enum ConnectionState: string
             self::DRAINING => '排空中',
             self::CLOSED => '已关闭',
         };
+    }
+
+    /**
+     * 获取标签 (EnumExtra 接口要求)
+     */
+    public function getLabel(): string
+    {
+        return $this->getDescription();
     }
 }

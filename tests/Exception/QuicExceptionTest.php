@@ -138,7 +138,6 @@ class QuicExceptionTest extends TestCase
             $exception = new QuicException("测试{$errorCode->name}", $errorCode);
             $this->assertSame($errorCode, $exception->getQuicError());
             $this->assertSame($errorCode->value, $exception->getCode());
-            $this->assertIsString($exception->getErrorDescription());
         }
     }
 } 
