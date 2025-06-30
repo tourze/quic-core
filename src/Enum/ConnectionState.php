@@ -12,7 +12,7 @@ use Tourze\EnumExtra\SelectTrait;
 
 /**
  * QUIC连接状态枚举
- * 
+ *
  * 定义QUIC连接的各种状态及其转换逻辑
  * 参考：https://tools.ietf.org/html/rfc9000#section-4
  */

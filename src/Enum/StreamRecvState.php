@@ -12,7 +12,7 @@ use Tourze\EnumExtra\SelectTrait;
 
 /**
  * QUIC流接收状态枚举
- * 
+ *
  * 定义流接收端的状态机
  * 参考：https://tools.ietf.org/html/rfc9000#section-3.2
  */

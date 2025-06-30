@@ -8,7 +8,7 @@ use Tourze\QUIC\Core\Enum\QuicError;
 
 /**
  * QUIC加密异常
- * 
+ *
  * 用于表示加密和TLS相关的错误
  */
 class CryptoException extends QuicException

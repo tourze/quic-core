@@ -9,7 +9,7 @@ use Tourze\QUIC\Core\Enum\ConnectionState;
 
 /**
  * ConnectionState 枚举单元测试
- * 
+ *
  * @covers \Tourze\QUIC\Core\Enum\ConnectionState
  */
 class ConnectionStateTest extends TestCase

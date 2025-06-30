@@ -11,7 +11,7 @@ use Tourze\QUIC\Core\Constants;
 
 /**
  * ConnectionId 单元测试
- * 
+ *
  * @covers \Tourze\QUIC\Core\ConnectionId
  */
 class ConnectionIdTest extends TestCase

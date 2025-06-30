@@ -12,7 +12,7 @@ use Tourze\EnumExtra\SelectTrait;
 
 /**
  * QUIC流类型枚举
- * 
+ *
  * 定义QUIC流的类型和特性
  * 参考：https://tools.ietf.org/html/rfc9000#section-2.1
  */

@@ -12,7 +12,7 @@ use Tourze\EnumExtra\SelectTrait;
 
 /**
  * QUIC帧类型枚举
- * 
+ *
  * 根据RFC 9000定义的所有QUIC帧类型
  * 参考：https://tools.ietf.org/html/rfc9000#section-12.4
  */

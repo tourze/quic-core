@@ -12,7 +12,7 @@ use Tourze\EnumExtra\SelectTrait;
 
 /**
  * ECN（Explicit Congestion Notification）状态枚举
- * 
+ *
  * 定义ECN功能的验证状态
  * 参考：https://tools.ietf.org/html/rfc9000#section-13.4
  */

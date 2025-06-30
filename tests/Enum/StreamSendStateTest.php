@@ -9,7 +9,7 @@ use Tourze\QUIC\Core\Enum\StreamSendState;
 
 /**
  * StreamSendState 枚举单元测试
- * 
+ *
  * @covers \Tourze\QUIC\Core\Enum\StreamSendState
  */
 class StreamSendStateTest extends TestCase

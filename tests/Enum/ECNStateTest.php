@@ -9,7 +9,7 @@ use Tourze\QUIC\Core\Enum\ECNState;
 
 /**
  * ECNState 枚举单元测试
- * 
+ *
  * @covers \Tourze\QUIC\Core\Enum\ECNState
  */
 class ECNStateTest extends TestCase

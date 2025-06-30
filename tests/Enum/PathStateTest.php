@@ -9,7 +9,7 @@ use Tourze\QUIC\Core\Enum\PathState;
 
 /**
  * PathState 枚举单元测试
- * 
+ *
  * @covers \Tourze\QUIC\Core\Enum\PathState
  */
 class PathStateTest extends TestCase

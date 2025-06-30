@@ -8,7 +8,7 @@ use Tourze\QUIC\Core\Enum\QuicError;
 
 /**
  * QUIC帧异常
- * 
+ *
  * 用于表示帧处理过程中的错误，如帧编码错误、传输参数错误等
  */
 class FrameException extends QuicException

@@ -8,7 +8,7 @@ use Tourze\QUIC\Core\Enum\QuicError;
 
 /**
  * QUIC流异常
- * 
+ *
  * 用于表示流层面的错误，如流状态错误、流限制等
  */
 class StreamException extends QuicException

@@ -9,7 +9,7 @@ use Tourze\QUIC\Core\Enum\QuicError;
 
 /**
  * QuicError 枚举单元测试
- * 
+ *
  * @covers \Tourze\QUIC\Core\Enum\QuicError
  */
 class QuicErrorTest extends TestCase

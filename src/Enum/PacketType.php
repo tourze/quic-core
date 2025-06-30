@@ -12,7 +12,7 @@ use Tourze\EnumExtra\SelectTrait;
 
 /**
  * QUIC包类型枚举
- * 
+ *
  * 定义QUIC包的各种类型及其特性
  * 参考：https://tools.ietf.org/html/rfc9000#section-17
  */

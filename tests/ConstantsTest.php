@@ -9,7 +9,7 @@ use Tourze\QUIC\Core\Constants;
 
 /**
  * Constants 常量类单元测试
- * 
+ *
  * @covers \Tourze\QUIC\Core\Constants
  */
 class ConstantsTest extends TestCase

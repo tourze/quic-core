@@ -11,7 +11,7 @@ use Tourze\QUIC\Core\VariableInteger;
 
 /**
  * VariableInteger 单元测试
- * 
+ *
  * @covers \Tourze\QUIC\Core\VariableInteger
  */
 class VariableIntegerTest extends TestCase

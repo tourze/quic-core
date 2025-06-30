@@ -6,7 +6,7 @@ namespace Tourze\QUIC\Core;
 
 /**
  * QUIC协议常量定义
- * 
+ *
  * 包含所有RFC 9000定义的协议常量和默认值
  * 参考：https://tools.ietf.org/html/rfc9000
  */
@@ -124,6 +124,36 @@ final class Constants
             self::VERSION_1,
             self::VERSION_DRAFT_29,
         ]);
+    }
+
+    // 错误码定义 (RFC 9000 Section 20)
+    public const ERROR_NO_ERROR = 0x00;
+    public const ERROR_INTERNAL_ERROR = 0x01;
+    public const ERROR_CONNECTION_REFUSED = 0x02;
+    public const ERROR_FLOW_CONTROL_ERROR = 0x03;
+    public const ERROR_STREAM_LIMIT_ERROR = 0x04;
+    public const ERROR_STREAM_STATE_ERROR = 0x05;
+    public const ERROR_FINAL_SIZE_ERROR = 0x06;
+    public const ERROR_FRAME_ENCODING_ERROR = 0x07;
+    public const ERROR_TRANSPORT_PARAMETER_ERROR = 0x08;
+    public const ERROR_CONNECTION_ID_LIMIT_ERROR = 0x09;
+    public const ERROR_PROTOCOL_VIOLATION = 0x0A;
+    public const ERROR_INVALID_TOKEN = 0x0B;
+    public const ERROR_APPLICATION_ERROR = 0x0C;
+    public const ERROR_CRYPTO_BUFFER_EXCEEDED = 0x0D;
+    public const ERROR_KEY_UPDATE_ERROR = 0x0E;
+    public const ERROR_AEAD_LIMIT_REACHED = 0x0F;
+    public const ERROR_NO_VIABLE_PATH = 0x10;
+
+    /**
+     * 获取支持的版本列表
+     */
+    public static function getSupportedVersions(): array
+    {
+        return [
+            self::VERSION_1,
+            self::VERSION_DRAFT_29,
+        ];
     }
 
     /**

@@ -9,7 +9,7 @@ use Tourze\QUIC\Core\Enum\PacketType;
 
 /**
  * PacketType 枚举单元测试
- * 
+ *
  * @covers \Tourze\QUIC\Core\Enum\PacketType
  */
 class PacketTypeTest extends TestCase

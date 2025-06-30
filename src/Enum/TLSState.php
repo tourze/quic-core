@@ -12,7 +12,7 @@ use Tourze\EnumExtra\SelectTrait;
 
 /**
  * TLS连接状态枚举
- * 
+ *
  * 定义TLS握手过程中的状态
  */
 enum TLSState: string implements Itemable, Labelable, Selectable

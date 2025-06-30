@@ -10,7 +10,7 @@ use Tourze\QUIC\Core\Exception\ConnectionException;
 
 /**
  * ConnectionException 连接异常类单元测试
- * 
+ *
  * @covers \Tourze\QUIC\Core\Exception\ConnectionException
  */
 class ConnectionExceptionTest extends TestCase

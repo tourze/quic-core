@@ -8,7 +8,7 @@ use Tourze\QUIC\Core\Enum\QuicError;
 
 /**
  * QUIC连接异常
- * 
+ *
  * 用于表示连接层面的错误，如连接被拒绝、协议违规等
  */
 class ConnectionException extends QuicException

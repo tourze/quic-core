@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core;
 
-use InvalidArgumentException;
+use Tourze\QUIC\Core\Exception\VariableIntegerException;
 
 /**
  * QUIC变长整数编解码器
- * 
+ *
  * 实现RFC 9000 Section 16定义的变长整数编码
  * 支持1、2、4、8字节的变长整数编码和解码
  * 参考：https://tools.ietf.org/html/rfc9000#section-16
@@ -20,16 +20,16 @@ final class VariableInteger
      *
      * @param int $value 要编码的整数值 (0 <= value <= 2^62-1)
      * @return string 编码后的字节串
-     * @throws InvalidArgumentException 当值超出范围时抛出异常
+     * @throws VariableIntegerException 当值超出范围时抛出异常
      */
     public static function encode(int $value): string
     {
         if ($value < 0) {
-            throw new InvalidArgumentException("变长整数不能为负数: {$value}");
+            throw VariableIntegerException::cannotBeNegative($value);
         }
 
         if ($value > Constants::VARINT_MAX_8_BYTE) {
-            throw new InvalidArgumentException("变长整数超出最大值: {$value}");
+            throw VariableIntegerException::exceedsMaxValue($value);
         }
 
         // 1字节编码 (0-63)
@@ -59,17 +59,17 @@ final class VariableInteger
      * @param string $data 要解码的字节串
      * @param int $offset 解码开始的偏移量
      * @return array{0: int, 1: int} [解码得到的值, 消耗的字节数]
-     * @throws InvalidArgumentException 当数据不足或格式错误时抛出异常
+     * @throws VariableIntegerException 当数据不足或格式错误时抛出异常
      */
     public static function decode(string $data, int $offset = 0): array
     {
         if ($offset < 0) {
-            throw new InvalidArgumentException("偏移量不能为负数: {$offset}");
+            throw VariableIntegerException::offsetCannotBeNegative($offset);
         }
 
         $length = strlen($data);
         if ($offset >= $length) {
-            throw new InvalidArgumentException("偏移量超出数据范围: {$offset} >= {$length}");
+            throw VariableIntegerException::offsetOutOfRange($offset, $length);
         }
 
         $firstByte = ord($data[$offset]);
@@ -81,21 +81,21 @@ final class VariableInteger
 
             case 1: // 2字节编码
                 if ($offset + 2 > $length) {
-                    throw new InvalidArgumentException('数据不足，无法解码2字节变长整数');
+                    throw VariableIntegerException::insufficientData('数据不足，无法解码2字节变长整数');
                 }
                 $value = unpack('n', substr($data, $offset, 2))[1];
                 return [$value & 0x3FFF, 2];
 
             case 2: // 4字节编码
                 if ($offset + 4 > $length) {
-                    throw new InvalidArgumentException('数据不足，无法解码4字节变长整数');
+                    throw VariableIntegerException::insufficientData('数据不足，无法解码4字节变长整数');
                 }
                 $value = unpack('N', substr($data, $offset, 4))[1];
                 return [$value & 0x3FFFFFFF, 4];
 
             case 3: // 8字节编码
                 if ($offset + 8 > $length) {
-                    throw new InvalidArgumentException('数据不足，无法解码8字节变长整数');
+                    throw VariableIntegerException::insufficientData('数据不足，无法解码8字节变长整数');
                 }
                 $values = unpack('N2', substr($data, $offset, 8));
                 $high = $values[1] & 0x3FFFFFFF;
@@ -103,7 +103,7 @@ final class VariableInteger
                 return [($high << 32) | $low, 8];
 
             default:
-                throw new InvalidArgumentException("无效的变长整数编码类型: {$encodingType}");
+                throw VariableIntegerException::invalidEncodingType($encodingType);
         }
     }
 
@@ -112,16 +112,16 @@ final class VariableInteger
      *
      * @param int $value 要编码的值
      * @return int 所需的字节数 (1, 2, 4, 或 8)
-     * @throws InvalidArgumentException 当值超出范围时抛出异常
+     * @throws VariableIntegerException 当值超出范围时抛出异常
      */
     public static function getLength(int $value): int
     {
         if ($value < 0) {
-            throw new InvalidArgumentException("变长整数不能为负数: {$value}");
+            throw VariableIntegerException::cannotBeNegative($value);
         }
 
         if ($value > Constants::VARINT_MAX_8_BYTE) {
-            throw new InvalidArgumentException("变长整数超出最大值: {$value}");
+            throw VariableIntegerException::exceedsMaxValue($value);
         }
 
         if ($value <= Constants::VARINT_MAX_1_BYTE) {
@@ -172,13 +172,13 @@ final class VariableInteger
      * @param string $data 数据
      * @param int $offset 偏移量
      * @return int 编码类型 (0=1字节, 1=2字节, 2=4字节, 3=8字节)
-     * @throws InvalidArgumentException 当偏移量超出范围时抛出异常
+     * @throws VariableIntegerException 当偏移量超出范围时抛出异常
      */
     public static function getEncodingType(string $data, int $offset = 0): int
     {
         $length = strlen($data);
         if ($offset >= $length) {
-            throw new InvalidArgumentException("偏移量超出数据范围: {$offset} >= {$length}");
+            throw VariableIntegerException::offsetOutOfRange($offset, $length);
         }
 
         $firstByte = ord($data[$offset]);

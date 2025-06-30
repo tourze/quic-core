@@ -11,7 +11,7 @@ use Tourze\QUIC\Core\Exception\QuicException;
 
 /**
  * QuicException 基础异常类单元测试
- * 
+ *
  * @covers \Tourze\QUIC\Core\Exception\QuicException
  */
 class QuicExceptionTest extends TestCase

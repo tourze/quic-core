@@ -9,7 +9,7 @@ use Tourze\QUIC\Core\Enum\QuicError;
 
 /**
  * QUIC基础异常类
- * 
+ *
  * 所有QUIC相关异常的基础类，包含QUIC错误码信息
  */
 class QuicException extends Exception

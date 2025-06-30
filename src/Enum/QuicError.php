@@ -12,7 +12,7 @@ use Tourze\EnumExtra\SelectTrait;
 
 /**
  * QUIC错误码枚举
- * 
+ *
  * 根据RFC 9000定义的所有QUIC错误类型
  * 参考：https://tools.ietf.org/html/rfc9000#section-20
  */

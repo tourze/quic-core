@@ -12,7 +12,7 @@ use Tourze\EnumExtra\SelectTrait;
 
 /**
  * 路径状态枚举
- * 
+ *
  * 定义QUIC连接路径的验证状态
  * 参考：https://tools.ietf.org/html/rfc9000#section-8.2
  */

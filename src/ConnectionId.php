@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core;
 
-use InvalidArgumentException;
+use Tourze\QUIC\Core\Exception\ConnectionIdException;
 
 /**
  * QUIC连接ID生成器和工具类
- * 
+ *
  * 负责生成、验证和管理QUIC连接ID
  * 连接ID长度范围：0-20字节
  * 参考：https://tools.ietf.org/html/rfc9000#section-5.1
@@ -20,14 +20,12 @@ final class ConnectionId
      *
      * @param int $length 连接ID长度，范围0-20字节
      * @return string 生成的连接ID
-     * @throws InvalidArgumentException 当长度超出范围时抛出异常
+     * @throws ConnectionIdException 当长度超出范围时抛出异常
      */
     public static function generate(int $length = Constants::DEFAULT_CONNECTION_ID_LENGTH): string
     {
         if ($length < Constants::MIN_CONNECTION_ID_LENGTH || $length > Constants::MAX_CONNECTION_ID_LENGTH) {
-            throw new InvalidArgumentException(
-                "连接ID长度必须在 {Constants::MIN_CONNECTION_ID_LENGTH}-{Constants::MAX_CONNECTION_ID_LENGTH} 字节范围内，实际长度: {$length}"
-            );
+            throw ConnectionIdException::invalidLength($length, Constants::MIN_CONNECTION_ID_LENGTH, Constants::MAX_CONNECTION_ID_LENGTH);
         }
 
         if ($length === 0) {
@@ -55,20 +53,20 @@ final class ConnectionId
      * @param int $minLength 最小长度，默认为4
      * @param int $maxLength 最大长度，默认为20
      * @return string 生成的连接ID
-     * @throws InvalidArgumentException 当长度参数无效时抛出异常
+     * @throws ConnectionIdException 当长度参数无效时抛出异常
      */
     public static function random(int $minLength = 4, int $maxLength = Constants::MAX_CONNECTION_ID_LENGTH): string
     {
         if ($minLength < Constants::MIN_CONNECTION_ID_LENGTH || $minLength > Constants::MAX_CONNECTION_ID_LENGTH) {
-            throw new InvalidArgumentException("最小长度超出范围: {$minLength}");
+            throw ConnectionIdException::minLengthOutOfRange($minLength);
         }
 
         if ($maxLength < Constants::MIN_CONNECTION_ID_LENGTH || $maxLength > Constants::MAX_CONNECTION_ID_LENGTH) {
-            throw new InvalidArgumentException("最大长度超出范围: {$maxLength}");
+            throw ConnectionIdException::maxLengthOutOfRange($maxLength);
         }
 
         if ($minLength > $maxLength) {
-            throw new InvalidArgumentException("最小长度不能大于最大长度: {$minLength} > {$maxLength}");
+            throw ConnectionIdException::minGreaterThanMax($minLength, $maxLength);
         }
 
         $length = random_int($minLength, $maxLength);
@@ -107,7 +105,7 @@ final class ConnectionId
      *
      * @param string $hex 十六进制字符串
      * @return string 连接ID
-     * @throws InvalidArgumentException 当十六进制字符串无效时抛出异常
+     * @throws ConnectionIdException 当十六进制字符串无效时抛出异常
      */
     public static function fromHex(string $hex): string
     {
@@ -116,20 +114,20 @@ final class ConnectionId
         }
 
         if (!ctype_xdigit($hex)) {
-            throw new InvalidArgumentException("无效的十六进制字符串: {$hex}");
+            throw ConnectionIdException::invalidHexString($hex);
         }
 
         if (strlen($hex) % 2 !== 0) {
-            throw new InvalidArgumentException("十六进制字符串长度必须为偶数: {$hex}");
+            throw ConnectionIdException::hexLengthMustBeEven($hex);
         }
 
         $connectionId = hex2bin($hex);
         if ($connectionId === false) {
-            throw new InvalidArgumentException("无法解析十六进制字符串: {$hex}");
+            throw ConnectionIdException::cannotParseHexString($hex);
         }
 
         if (!self::validate($connectionId)) {
-            throw new InvalidArgumentException("生成的连接ID长度超出范围");
+            throw ConnectionIdException::generatedConnectionIdOutOfRange();
         }
 
         return $connectionId;
@@ -184,7 +182,7 @@ final class ConnectionId
     public static function generateMultiple(int $count, int $length = Constants::DEFAULT_CONNECTION_ID_LENGTH): array
     {
         if ($count < 0) {
-            throw new InvalidArgumentException("生成数量不能为负数: {$count}");
+            throw ConnectionIdException::countCannotBeNegative($count);
         }
 
         $connectionIds = [];
@@ -212,12 +210,12 @@ final class ConnectionId
      * @param string $connectionId 连接ID
      * @param string $secret 密钥（16字节）
      * @return string 16字节的重置令牌
-     * @throws InvalidArgumentException 当密钥长度不正确时抛出异常
+     * @throws ConnectionIdException 当密钥长度不正确时抛出异常
      */
     public static function generateResetToken(string $connectionId, string $secret): string
     {
         if (strlen($secret) !== 16) {
-            throw new InvalidArgumentException("密钥长度必须为16字节");
+            throw ConnectionIdException::invalidSecretLength(strlen($secret));
         }
 
         // 使用HMAC-SHA256生成重置令牌，截取前16字节
@@ -242,7 +240,7 @@ final class ConnectionId
         try {
             $expectedToken = self::generateResetToken($connectionId, $secret);
             return hash_equals($expectedToken, $token);
-        } catch (InvalidArgumentException) {
+        } catch (ConnectionIdException) {
             return false;
         }
     }
