@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Tests\Enum;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitEnum\AbstractEnumTestCase;
 use Tourze\QUIC\Core\Enum\FrameType;
 
 /**
  * FrameType 枚举单元测试
  *
- * @covers \Tourze\QUIC\Core\Enum\FrameType
+ * @internal
  */
-class FrameTypeTest extends TestCase
+#[CoversClass(FrameType::class)]
+final class FrameTypeTest extends AbstractEnumTestCase
 {
     /**
      * 测试流帧判断
@@ -22,7 +24,7 @@ class FrameTypeTest extends TestCase
         $this->assertFalse(FrameType::PADDING->isStreamFrame());
         $this->assertFalse(FrameType::PING->isStreamFrame());
         $this->assertFalse(FrameType::ACK->isStreamFrame());
-        
+
         // 流帧（0x08-0x0F）
         $this->assertTrue(FrameType::STREAM->isStreamFrame());
         $this->assertTrue(FrameType::STREAM_FIN->isStreamFrame());
@@ -32,7 +34,7 @@ class FrameTypeTest extends TestCase
         $this->assertTrue(FrameType::STREAM_OFF_FIN->isStreamFrame());
         $this->assertTrue(FrameType::STREAM_OFF_LEN->isStreamFrame());
         $this->assertTrue(FrameType::STREAM_OFF_LEN_FIN->isStreamFrame());
-        
+
         $this->assertFalse(FrameType::MAX_DATA->isStreamFrame());
     }
 
@@ -44,16 +46,16 @@ class FrameTypeTest extends TestCase
         $this->assertFalse(FrameType::PADDING->isFlowControlled());
         $this->assertFalse(FrameType::PING->isFlowControlled());
         $this->assertFalse(FrameType::ACK->isFlowControlled());
-        
+
         // 流帧是流量控制的
         $this->assertTrue(FrameType::STREAM->isFlowControlled());
         $this->assertTrue(FrameType::STREAM_FIN->isFlowControlled());
         $this->assertTrue(FrameType::STREAM_LEN->isFlowControlled());
         $this->assertTrue(FrameType::STREAM_OFF_LEN_FIN->isFlowControlled());
-        
+
         // CRYPTO帧也是流量控制的
         $this->assertTrue(FrameType::CRYPTO->isFlowControlled());
-        
+
         $this->assertFalse(FrameType::MAX_DATA->isFlowControlled());
     }
 
@@ -69,7 +71,7 @@ class FrameTypeTest extends TestCase
         $this->assertFalse(FrameType::ACK_ECN->needsReliableDelivery());
         $this->assertFalse(FrameType::PATH_CHALLENGE->needsReliableDelivery());
         $this->assertFalse(FrameType::PATH_RESPONSE->needsReliableDelivery());
-        
+
         // 需要可靠传输的帧
         $this->assertTrue(FrameType::STREAM->needsReliableDelivery());
         $this->assertTrue(FrameType::CRYPTO->needsReliableDelivery());
@@ -84,7 +86,7 @@ class FrameTypeTest extends TestCase
     {
         $this->assertFalse(FrameType::PADDING->isFlowControl());
         $this->assertFalse(FrameType::STREAM->isFlowControl());
-        
+
         // 流控制帧
         $this->assertTrue(FrameType::MAX_DATA->isFlowControl());
         $this->assertTrue(FrameType::MAX_STREAM_DATA->isFlowControl());
@@ -104,7 +106,7 @@ class FrameTypeTest extends TestCase
         $this->assertFalse(FrameType::PADDING->isConnectionManagement());
         $this->assertFalse(FrameType::STREAM->isConnectionManagement());
         $this->assertFalse(FrameType::MAX_DATA->isConnectionManagement());
-        
+
         // 连接管理帧
         $this->assertTrue(FrameType::NEW_CONNECTION_ID->isConnectionManagement());
         $this->assertTrue(FrameType::RETIRE_CONNECTION_ID->isConnectionManagement());
@@ -122,7 +124,7 @@ class FrameTypeTest extends TestCase
     {
         $this->assertFalse(FrameType::PADDING->isAckFrame());
         $this->assertFalse(FrameType::STREAM->isAckFrame());
-        
+
         $this->assertTrue(FrameType::ACK->isAckFrame());
         $this->assertTrue(FrameType::ACK_ECN->isAckFrame());
     }
@@ -135,7 +137,7 @@ class FrameTypeTest extends TestCase
         // 非流帧
         $this->assertFalse(FrameType::PADDING->hasOffset());
         $this->assertFalse(FrameType::ACK->hasOffset());
-        
+
         // 流帧中带偏移量的（位2设置）
         $this->assertFalse(FrameType::STREAM->hasOffset());       // 0x08: 位2=0
         $this->assertFalse(FrameType::STREAM_FIN->hasOffset());   // 0x09: 位2=0
@@ -154,7 +156,7 @@ class FrameTypeTest extends TestCase
     {
         // 非流帧
         $this->assertFalse(FrameType::PADDING->hasLength());
-        
+
         // 流帧中带长度的（位1设置）
         $this->assertFalse(FrameType::STREAM->hasLength());       // 0x08: 位1=0
         $this->assertFalse(FrameType::STREAM_FIN->hasLength());   // 0x09: 位1=0
@@ -173,7 +175,7 @@ class FrameTypeTest extends TestCase
     {
         // 非流帧
         $this->assertFalse(FrameType::PADDING->hasFin());
-        
+
         // 流帧中带FIN的（位0设置）
         $this->assertFalse(FrameType::STREAM->hasFin());       // 0x08: 位0=0
         $this->assertTrue(FrameType::STREAM_FIN->hasFin());    // 0x09: 位0=1
@@ -196,7 +198,7 @@ class FrameTypeTest extends TestCase
         $this->assertTrue(FrameType::ACK_ECN->allowedInInitial());
         $this->assertTrue(FrameType::CRYPTO->allowedInInitial());
         $this->assertTrue(FrameType::CONNECTION_CLOSE->allowedInInitial());
-        
+
         $this->assertFalse(FrameType::STREAM->allowedInInitial());
         $this->assertFalse(FrameType::MAX_DATA->allowedInInitial());
         $this->assertFalse(FrameType::HANDSHAKE_DONE->allowedInInitial());
@@ -213,7 +215,7 @@ class FrameTypeTest extends TestCase
         $this->assertTrue(FrameType::ACK_ECN->allowedInHandshake());
         $this->assertTrue(FrameType::CRYPTO->allowedInHandshake());
         $this->assertTrue(FrameType::CONNECTION_CLOSE->allowedInHandshake());
-        
+
         $this->assertFalse(FrameType::STREAM->allowedInHandshake());
         $this->assertFalse(FrameType::MAX_DATA->allowedInHandshake());
         $this->assertFalse(FrameType::HANDSHAKE_DONE->allowedInHandshake());
@@ -247,4 +249,34 @@ class FrameTypeTest extends TestCase
         $this->assertSame('连接关闭帧', FrameType::CONNECTION_CLOSE->getDescription());
         $this->assertSame('握手完成帧', FrameType::HANDSHAKE_DONE->getDescription());
     }
-} 
+
+    /**
+     * 测试 toArray 方法
+     */
+    public function testToArray(): void
+    {
+        $result = FrameType::PADDING->toArray();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('填充帧', $result['label']);
+        $this->assertSame(0, $result['value']);
+    }
+
+    /**
+     * 测试具体的 toSelectItem 结果
+     */
+    public function testSpecificToSelectItemResults(): void
+    {
+        $result = FrameType::PADDING->toSelectItem();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('填充帧', $result['label']);
+        $this->assertSame(0, $result['value']);
+
+        $result = FrameType::STREAM->toSelectItem();
+        $this->assertSame('流帧', $result['label']);
+        $this->assertSame(8, $result['value']);
+    }
+}

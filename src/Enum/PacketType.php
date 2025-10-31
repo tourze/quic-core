@@ -20,6 +20,7 @@ enum PacketType: int implements Itemable, Labelable, Selectable
 {
     use ItemTrait;
     use SelectTrait;
+
     case INITIAL = 0x00;
     case ZERO_RTT = 0x01;
     case HANDSHAKE = 0x02;
@@ -36,8 +37,8 @@ enum PacketType: int implements Itemable, Labelable, Selectable
             self::ZERO_RTT,
             self::HANDSHAKE,
             self::RETRY,
-            self::VERSION_NEGOTIATION
-        ]);
+            self::VERSION_NEGOTIATION,
+        ], true);
     }
 
     /**
@@ -48,8 +49,8 @@ enum PacketType: int implements Itemable, Labelable, Selectable
         return in_array($this, [
             self::INITIAL,
             self::ZERO_RTT,
-            self::HANDSHAKE
-        ]);
+            self::HANDSHAKE,
+        ], true);
     }
 
     /**
@@ -59,8 +60,8 @@ enum PacketType: int implements Itemable, Labelable, Selectable
     {
         return in_array($this, [
             self::INITIAL,
-            self::HANDSHAKE
-        ]);
+            self::HANDSHAKE,
+        ], true);
     }
 
     /**
@@ -78,8 +79,8 @@ enum PacketType: int implements Itemable, Labelable, Selectable
     {
         return in_array($this, [
             self::INITIAL,
-            self::HANDSHAKE
-        ]);
+            self::HANDSHAKE,
+        ], true);
     }
 
     /**
@@ -89,8 +90,8 @@ enum PacketType: int implements Itemable, Labelable, Selectable
     {
         return in_array($this, [
             self::INITIAL,
-            self::HANDSHAKE
-        ]);
+            self::HANDSHAKE,
+        ], true);
     }
 
     /**
@@ -98,12 +99,12 @@ enum PacketType: int implements Itemable, Labelable, Selectable
      */
     public function getName(): string
     {
-        return match($this) {
+        return match ($this) {
             self::INITIAL => 'Initial',
             self::ZERO_RTT => 'Zero RTT',
             self::HANDSHAKE => 'Handshake',
             self::RETRY => 'Retry',
-            self::VERSION_NEGOTIATION => 'Version Negotiation'
+            self::VERSION_NEGOTIATION => 'Version Negotiation',
         };
     }
 
@@ -112,12 +113,12 @@ enum PacketType: int implements Itemable, Labelable, Selectable
      */
     public function getDescription(): string
     {
-        return match($this) {
+        return match ($this) {
             self::INITIAL => '初始包',
             self::ZERO_RTT => '零RTT包',
             self::HANDSHAKE => '握手包',
             self::RETRY => '重试包',
-            self::VERSION_NEGOTIATION => '版本协商包'
+            self::VERSION_NEGOTIATION => '版本协商包',
         };
     }
 
@@ -126,7 +127,7 @@ enum PacketType: int implements Itemable, Labelable, Selectable
      */
     public function getHeaderType(): int
     {
-        return match($this) {
+        return match ($this) {
             self::INITIAL => 0x00,
             self::ZERO_RTT => 0x01,
             self::HANDSHAKE => 0x02,
@@ -142,4 +143,4 @@ enum PacketType: int implements Itemable, Labelable, Selectable
     {
         return $this->getDescription();
     }
-} 
+}

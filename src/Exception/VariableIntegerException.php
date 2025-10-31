@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Exception;
 
-use InvalidArgumentException;
-
 /**
  * 变长整数异常类
  *
  * 用于处理QUIC变长整数编解码过程中的参数错误
  */
-class VariableIntegerException extends InvalidArgumentException
+class VariableIntegerException extends \InvalidArgumentException
 {
     /**
      * 创建变长整数不能为负数异常
@@ -60,4 +58,4 @@ class VariableIntegerException extends InvalidArgumentException
     {
         return new self("无效的变长整数编码类型: {$encodingType}");
     }
-} 
+}

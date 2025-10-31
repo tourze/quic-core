@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Tests;
 
-use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Tourze\QUIC\Core\ConnectionId;
 use Tourze\QUIC\Core\Constants;
@@ -12,9 +12,10 @@ use Tourze\QUIC\Core\Constants;
 /**
  * ConnectionId 单元测试
  *
- * @covers \Tourze\QUIC\Core\ConnectionId
+ * @internal
  */
-class ConnectionIdTest extends TestCase
+#[CoversClass(ConnectionId::class)]
+final class ConnectionIdTest extends TestCase
 {
     /**
      * 测试生成默认长度的连接ID
@@ -30,7 +31,7 @@ class ConnectionIdTest extends TestCase
      */
     public function testGenerateWithLength(): void
     {
-        for ($length = 0; $length <= 20; $length++) {
+        for ($length = 0; $length <= 20; ++$length) {
             $connectionId = ConnectionId::generate($length);
             $this->assertSame($length, strlen($connectionId));
         }
@@ -41,7 +42,7 @@ class ConnectionIdTest extends TestCase
      */
     public function testGenerateInvalidLength(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('连接ID长度必须在');
         ConnectionId::generate(21);
     }
@@ -51,7 +52,7 @@ class ConnectionIdTest extends TestCase
      */
     public function testGenerateNegativeLength(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('连接ID长度必须在');
         ConnectionId::generate(-1);
     }
@@ -75,7 +76,7 @@ class ConnectionIdTest extends TestCase
      */
     public function testRandomGeneration(): void
     {
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 10; ++$i) {
             $connectionId = ConnectionId::random(4, 16);
             $length = strlen($connectionId);
             $this->assertGreaterThanOrEqual(4, $length);
@@ -88,7 +89,7 @@ class ConnectionIdTest extends TestCase
      */
     public function testRandomInvalidParameters(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('最小长度不能大于最大长度');
         ConnectionId::random(10, 5);
     }
@@ -131,7 +132,7 @@ class ConnectionIdTest extends TestCase
      */
     public function testFromInvalidHex(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('无效的十六进制字符串');
         ConnectionId::fromHex('xyz');
     }
@@ -141,7 +142,7 @@ class ConnectionIdTest extends TestCase
      */
     public function testFromOddLengthHex(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('十六进制字符串长度必须为偶数');
         ConnectionId::fromHex('abc');
     }
@@ -181,7 +182,7 @@ class ConnectionIdTest extends TestCase
     {
         $connectionIds = ConnectionId::generateMultiple(5, 8);
         $this->assertCount(5, $connectionIds);
-        
+
         foreach ($connectionIds as $connectionId) {
             $this->assertSame(8, strlen($connectionId));
         }
@@ -192,7 +193,7 @@ class ConnectionIdTest extends TestCase
      */
     public function testGenerateMultipleNegativeCount(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('生成数量不能为负数');
         ConnectionId::generateMultiple(-1);
     }
@@ -216,7 +217,7 @@ class ConnectionIdTest extends TestCase
         $connectionId = 'test1234';
         $secret = str_repeat('a', 16);
         $token = ConnectionId::generateResetToken($connectionId, $secret);
-        
+
         $this->assertSame(16, strlen($token));
     }
 
@@ -225,7 +226,7 @@ class ConnectionIdTest extends TestCase
      */
     public function testGenerateResetTokenInvalidSecret(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('密钥长度必须为16字节');
         ConnectionId::generateResetToken('test', 'short');
     }
@@ -238,7 +239,7 @@ class ConnectionIdTest extends TestCase
         $connectionId = 'test1234';
         $secret = str_repeat('a', 16);
         $token = ConnectionId::generateResetToken($connectionId, $secret);
-        
+
         $this->assertTrue(ConnectionId::verifyResetToken($connectionId, $token, $secret));
         $this->assertFalse(ConnectionId::verifyResetToken($connectionId, $token, str_repeat('b', 16)));
         $this->assertFalse(ConnectionId::verifyResetToken($connectionId, 'invalid', $secret));
@@ -251,7 +252,7 @@ class ConnectionIdTest extends TestCase
     {
         $connectionId = 'test1234';
         $secret = str_repeat('a', 16);
-        
+
         $this->assertFalse(ConnectionId::verifyResetToken($connectionId, 'short', $secret));
     }
 
@@ -261,11 +262,11 @@ class ConnectionIdTest extends TestCase
     public function testHexRoundTrip(): void
     {
         $testValues = ['', 'a', 'test', "\x00\xFF\x7F", str_repeat('x', 20)];
-        
+
         foreach ($testValues as $value) {
             $hex = ConnectionId::toHex($value);
             $decoded = ConnectionId::fromHex($hex);
             $this->assertSame($value, $decoded);
         }
     }
-} 
+}

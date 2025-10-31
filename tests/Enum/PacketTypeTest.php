@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Tests\Enum;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitEnum\AbstractEnumTestCase;
 use Tourze\QUIC\Core\Enum\PacketType;
 
 /**
  * PacketType 枚举单元测试
  *
- * @covers \Tourze\QUIC\Core\Enum\PacketType
+ * @internal
  */
-class PacketTypeTest extends TestCase
+#[CoversClass(PacketType::class)]
+final class PacketTypeTest extends AbstractEnumTestCase
 {
     /**
      * 测试枚举值
@@ -133,4 +135,34 @@ class PacketTypeTest extends TestCase
         $this->assertSame(0x03, PacketType::RETRY->getHeaderType());
         $this->assertSame(0x00, PacketType::VERSION_NEGOTIATION->getHeaderType()); // 特殊处理
     }
-} 
+
+    /**
+     * 测试 toArray 方法
+     */
+    public function testToArray(): void
+    {
+        $result = PacketType::INITIAL->toArray();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('初始包', $result['label']);
+        $this->assertSame(0, $result['value']);
+    }
+
+    /**
+     * 测试具体的 toSelectItem 结果
+     */
+    public function testSpecificToSelectItemResults(): void
+    {
+        $result = PacketType::INITIAL->toSelectItem();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('初始包', $result['label']);
+        $this->assertSame(0, $result['value']);
+
+        $result = PacketType::HANDSHAKE->toSelectItem();
+        $this->assertSame('握手包', $result['label']);
+        $this->assertSame(2, $result['value']);
+    }
+}

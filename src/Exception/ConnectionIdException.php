@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Exception;
 
-use InvalidArgumentException;
-
 /**
  * 连接ID异常类
  *
  * 用于处理连接ID生成、验证和操作过程中的参数错误
  */
-class ConnectionIdException extends InvalidArgumentException
+class ConnectionIdException extends \InvalidArgumentException
 {
     /**
      * 创建长度超出范围异常
@@ -74,7 +72,7 @@ class ConnectionIdException extends InvalidArgumentException
      */
     public static function generatedConnectionIdOutOfRange(): self
     {
-        return new self("生成的连接ID长度超出范围");
+        return new self('生成的连接ID长度超出范围');
     }
 
     /**
@@ -100,4 +98,4 @@ class ConnectionIdException extends InvalidArgumentException
     {
         return new self("密钥长度必须为16字节，实际长度: {$length}");
     }
-} 
+}

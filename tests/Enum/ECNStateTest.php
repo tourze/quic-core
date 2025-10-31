@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Tests\Enum;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitEnum\AbstractEnumTestCase;
 use Tourze\QUIC\Core\Enum\ECNState;
 
 /**
  * ECNState 枚举单元测试
  *
- * @covers \Tourze\QUIC\Core\Enum\ECNState
+ * @internal
  */
-class ECNStateTest extends TestCase
+#[CoversClass(ECNState::class)]
+final class ECNStateTest extends AbstractEnumTestCase
 {
     /**
      * 测试枚举值
@@ -68,4 +70,38 @@ class ECNStateTest extends TestCase
         $this->assertSame('ECN功能可用', ECNState::CAPABLE->getDescription());
         $this->assertSame('ECN功能不可用', ECNState::FAILED->getDescription());
     }
-} 
+
+    /**
+     * 测试 toArray 方法
+     */
+    public function testToArray(): void
+    {
+        $result = ECNState::TESTING->toArray();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('测试中', $result['label']);
+        $this->assertSame('testing', $result['value']);
+
+        $result = ECNState::CAPABLE->toArray();
+        $this->assertSame('支持', $result['label']);
+        $this->assertSame('capable', $result['value']);
+    }
+
+    /**
+     * 测试具体的 toSelectItem 结果
+     */
+    public function testSpecificToSelectItemResults(): void
+    {
+        $result = ECNState::TESTING->toSelectItem();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('测试中', $result['label']);
+        $this->assertSame('testing', $result['value']);
+
+        $result = ECNState::CAPABLE->toSelectItem();
+        $this->assertSame('支持', $result['label']);
+        $this->assertSame('capable', $result['value']);
+    }
+}

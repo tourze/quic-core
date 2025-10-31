@@ -20,6 +20,7 @@ enum QuicError: int implements Itemable, Labelable, Selectable
 {
     use ItemTrait;
     use SelectTrait;
+
     case NO_ERROR = 0x0;
     case INTERNAL_ERROR = 0x1;
     case CONNECTION_REFUSED = 0x2;
@@ -44,7 +45,7 @@ enum QuicError: int implements Itemable, Labelable, Selectable
      */
     public function isConnectionError(): bool
     {
-        return $this->value < 0x100 && $this !== self::APPLICATION_ERROR;
+        return $this->value < 0x100 && self::APPLICATION_ERROR !== $this;
     }
 
     /**
@@ -52,15 +53,7 @@ enum QuicError: int implements Itemable, Labelable, Selectable
      */
     public function isApplicationError(): bool
     {
-        return $this === self::APPLICATION_ERROR;
-    }
-
-    /**
-     * 判断是否为TLS/加密错误
-     */
-    public function isCryptoError(): bool
-    {
-        return $this->value >= 0x100 && $this->value <= 0x1FF;
+        return self::APPLICATION_ERROR === $this;
     }
 
     /**
@@ -68,30 +61,46 @@ enum QuicError: int implements Itemable, Labelable, Selectable
      */
     public function isTransportError(): bool
     {
-        return !$this->isApplicationError() && !$this->isCryptoError();
+        return $this->value < 0x100 && !$this->isApplicationError();
     }
 
     /**
-     * 判断是否为致命错误（需要立即关闭连接）
+     * 判断是否为致命错误
      */
     public function isFatal(): bool
     {
-        return in_array($this, [
-            self::INTERNAL_ERROR,
-            self::CONNECTION_REFUSED,
-            self::PROTOCOL_VIOLATION,
-            self::CRYPTO_BUFFER_EXCEEDED,
-            self::KEY_UPDATE_ERROR,
-            self::AEAD_LIMIT_REACHED,
-        ]);
+        return !in_array($this, [
+            self::NO_ERROR,
+            self::FLOW_CONTROL_ERROR,
+        ], true);
     }
 
     /**
-     * 获取错误的描述信息
+     * 判断是否为加密错误
+     */
+    public function isCryptoError(): bool
+    {
+        return $this->value >= 0x100;
+    }
+
+    /**
+     * 判断是否为流控错误
+     */
+    public function isFlowControlError(): bool
+    {
+        return in_array($this, [
+            self::FLOW_CONTROL_ERROR,
+            self::STREAM_LIMIT_ERROR,
+            self::FINAL_SIZE_ERROR,
+        ], true);
+    }
+
+    /**
+     * 获取错误描述
      */
     public function getDescription(): string
     {
-        return match($this) {
+        return match ($this) {
             self::NO_ERROR => '无错误',
             self::INTERNAL_ERROR => '内部错误',
             self::CONNECTION_REFUSED => '连接被拒绝',
@@ -102,13 +111,13 @@ enum QuicError: int implements Itemable, Labelable, Selectable
             self::FRAME_ENCODING_ERROR => '帧编码错误',
             self::TRANSPORT_PARAMETER_ERROR => '传输参数错误',
             self::CONNECTION_ID_LIMIT_ERROR => '连接ID限制错误',
-            self::PROTOCOL_VIOLATION => '协议违规',
+            self::PROTOCOL_VIOLATION => '协议违反',
             self::INVALID_TOKEN => '无效令牌',
             self::APPLICATION_ERROR => '应用层错误',
             self::CRYPTO_BUFFER_EXCEEDED => '加密缓冲区溢出',
             self::KEY_UPDATE_ERROR => '密钥更新错误',
             self::AEAD_LIMIT_REACHED => 'AEAD限制达到',
-            self::NO_VIABLE_PATH => '无可用路径',
+            self::NO_VIABLE_PATH => '无可行路径',
             self::CRYPTO_ERROR => '加密错误',
         };
     }
@@ -120,4 +129,4 @@ enum QuicError: int implements Itemable, Labelable, Selectable
     {
         return $this->getDescription();
     }
-} 
+}

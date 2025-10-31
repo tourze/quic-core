@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Tests\Enum;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitEnum\AbstractEnumTestCase;
 use Tourze\QUIC\Core\Enum\PathState;
 
 /**
  * PathState 枚举单元测试
  *
- * @covers \Tourze\QUIC\Core\Enum\PathState
+ * @internal
  */
-class PathStateTest extends TestCase
+#[CoversClass(PathState::class)]
+final class PathStateTest extends AbstractEnumTestCase
 {
     /**
      * 测试枚举值
@@ -68,4 +70,34 @@ class PathStateTest extends TestCase
         $this->assertSame('路径已验证', PathState::VALIDATED->getDescription());
         $this->assertSame('路径已激活', PathState::ACTIVE->getDescription());
     }
-} 
+
+    /**
+     * 测试 toArray 方法
+     */
+    public function testToArray(): void
+    {
+        $result = PathState::PROBING->toArray();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('正在探测路径', $result['label']);
+        $this->assertSame('probing', $result['value']);
+    }
+
+    /**
+     * 测试具体的 toSelectItem 结果
+     */
+    public function testSpecificToSelectItemResults(): void
+    {
+        $result = PathState::VALIDATING->toSelectItem();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('正在验证路径', $result['label']);
+        $this->assertSame('validating', $result['value']);
+
+        $result = PathState::VALIDATED->toSelectItem();
+        $this->assertSame('路径已验证', $result['label']);
+        $this->assertSame('validated', $result['value']);
+    }
+}

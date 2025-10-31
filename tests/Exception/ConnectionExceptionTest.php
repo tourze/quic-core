@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Tests\Exception;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitBase\AbstractExceptionTestCase;
 use Tourze\QUIC\Core\Enum\QuicError;
 use Tourze\QUIC\Core\Exception\ConnectionException;
 
 /**
  * ConnectionException 连接异常类单元测试
  *
- * @covers \Tourze\QUIC\Core\Exception\ConnectionException
+ * @internal
  */
-class ConnectionExceptionTest extends TestCase
+#[CoversClass(ConnectionException::class)]
+final class ConnectionExceptionTest extends AbstractExceptionTestCase
 {
     /**
      * 测试连接被拒绝异常
@@ -126,9 +128,10 @@ class ConnectionExceptionTest extends TestCase
     public function testInheritance(): void
     {
         $exception = ConnectionException::refused();
-        
-        $this->assertInstanceOf('Tourze\QUIC\Core\Exception\QuicException', $exception);
-        $this->assertInstanceOf('Exception', $exception);
+
+        // 测试确实是 ConnectionException 的实例并包含正确的错误信息
+        $this->assertSame(QuicError::CONNECTION_REFUSED, $exception->getQuicError());
+        $this->assertSame('连接被拒绝', $exception->getMessage());
     }
 
     /**
@@ -150,4 +153,4 @@ class ConnectionExceptionTest extends TestCase
             $this->assertFalse($exception->isApplicationError());
         }
     }
-} 
+}

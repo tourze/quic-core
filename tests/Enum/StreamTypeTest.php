@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Tests\Enum;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitEnum\AbstractEnumTestCase;
 use Tourze\QUIC\Core\Enum\StreamType;
 
 /**
  * StreamType 枚举单元测试
  *
- * @covers \Tourze\QUIC\Core\Enum\StreamType
+ * @internal
  */
-class StreamTypeTest extends TestCase
+#[CoversClass(StreamType::class)]
+final class StreamTypeTest extends AbstractEnumTestCase
 {
     /**
      * 测试枚举值
@@ -79,13 +81,13 @@ class StreamTypeTest extends TestCase
         $this->assertSame(StreamType::SERVER_BIDI, StreamType::fromStreamId(1));
         $this->assertSame(StreamType::CLIENT_UNI, StreamType::fromStreamId(2));
         $this->assertSame(StreamType::SERVER_UNI, StreamType::fromStreamId(3));
-        
+
         // 测试更大的流ID（取模操作）
         $this->assertSame(StreamType::CLIENT_BIDI, StreamType::fromStreamId(4));
         $this->assertSame(StreamType::SERVER_BIDI, StreamType::fromStreamId(5));
         $this->assertSame(StreamType::CLIENT_UNI, StreamType::fromStreamId(6));
         $this->assertSame(StreamType::SERVER_UNI, StreamType::fromStreamId(7));
-        
+
         $this->assertSame(StreamType::CLIENT_BIDI, StreamType::fromStreamId(8));
         $this->assertSame(StreamType::CLIENT_BIDI, StreamType::fromStreamId(100));
         $this->assertSame(StreamType::SERVER_UNI, StreamType::fromStreamId(99));
@@ -101,4 +103,34 @@ class StreamTypeTest extends TestCase
         $this->assertSame('客户端单向流', StreamType::CLIENT_UNI->getDescription());
         $this->assertSame('服务端单向流', StreamType::SERVER_UNI->getDescription());
     }
-} 
+
+    /**
+     * 测试 toArray 方法
+     */
+    public function testToArray(): void
+    {
+        $result = StreamType::CLIENT_BIDI->toArray();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('客户端双向流', $result['label']);
+        $this->assertSame(0, $result['value']);
+    }
+
+    /**
+     * 测试具体的 toSelectItem 结果
+     */
+    public function testSpecificToSelectItemResults(): void
+    {
+        $result = StreamType::CLIENT_BIDI->toSelectItem();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('客户端双向流', $result['label']);
+        $this->assertSame(0, $result['value']);
+
+        $result = StreamType::CLIENT_UNI->toSelectItem();
+        $this->assertSame('客户端单向流', $result['label']);
+        $this->assertSame(2, $result['value']);
+    }
+}

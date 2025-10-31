@@ -20,6 +20,7 @@ enum FrameType: int implements Itemable, Labelable, Selectable
 {
     use ItemTrait;
     use SelectTrait;
+
     case PADDING = 0x00;
     case PING = 0x01;
     case ACK = 0x02;
@@ -67,160 +68,66 @@ enum FrameType: int implements Itemable, Labelable, Selectable
      */
     public function isFlowControlled(): bool
     {
-        return in_array($this, [
-            self::STREAM,
-            self::STREAM_FIN,
-            self::STREAM_LEN,
-            self::STREAM_LEN_FIN,
-            self::STREAM_OFF,
-            self::STREAM_OFF_FIN,
-            self::STREAM_OFF_LEN,
-            self::STREAM_OFF_LEN_FIN,
-            self::CRYPTO,
-        ]);
+        return $this->isStreamFrame() || self::CRYPTO === $this;
     }
 
     /**
-     * 判断是否需要可靠传输
+     * 判断是否为连接级别帧
      */
-    public function needsReliableDelivery(): bool
+    public function isConnectionLevel(): bool
     {
-        return !in_array($this, [
+        return in_array($this, [
             self::PADDING,
             self::PING,
             self::ACK,
             self::ACK_ECN,
-            self::PATH_CHALLENGE,
-            self::PATH_RESPONSE,
-        ]);
-    }
-
-    /**
-     * 判断是否为流控制帧
-     */
-    public function isFlowControl(): bool
-    {
-        return in_array($this, [
-            self::MAX_DATA,
-            self::MAX_STREAM_DATA,
-            self::MAX_STREAMS,
-            self::MAX_STREAMS_UNI,
-            self::DATA_BLOCKED,
-            self::STREAM_DATA_BLOCKED,
-            self::STREAMS_BLOCKED,
-            self::STREAMS_BLOCKED_UNI,
-        ]);
-    }
-
-    /**
-     * 判断是否为连接管理帧
-     */
-    public function isConnectionManagement(): bool
-    {
-        return in_array($this, [
-            self::NEW_CONNECTION_ID,
-            self::RETIRE_CONNECTION_ID,
-            self::PATH_CHALLENGE,
-            self::PATH_RESPONSE,
             self::CONNECTION_CLOSE,
             self::CONNECTION_CLOSE_APP,
             self::HANDSHAKE_DONE,
-        ]);
+            self::MAX_DATA,
+            self::DATA_BLOCKED,
+        ], true);
     }
 
     /**
-     * 判断是否为确认帧
+     * 判断是否为路径相关帧
      */
-    public function isAckFrame(): bool
+    public function isPathFrame(): bool
     {
         return in_array($this, [
-            self::ACK,
-            self::ACK_ECN,
-        ]);
+            self::PATH_CHALLENGE,
+            self::PATH_RESPONSE,
+            self::NEW_CONNECTION_ID,
+            self::RETIRE_CONNECTION_ID,
+        ], true);
     }
 
     /**
-     * 判断是否包含偏移量字段
-     */
-    public function hasOffset(): bool
-    {
-        return $this->isStreamFrame() && ($this->value & 0x04) !== 0;
-    }
-
-    /**
-     * 判断是否包含长度字段
-     */
-    public function hasLength(): bool
-    {
-        return $this->isStreamFrame() && ($this->value & 0x02) !== 0;
-    }
-
-    /**
-     * 判断是否设置了FIN标志
-     */
-    public function hasFin(): bool
-    {
-        return $this->isStreamFrame() && ($this->value & 0x01) !== 0;
-    }
-
-    /**
-     * 判断是否可以在Initial包中发送
-     */
-    public function allowedInInitial(): bool
-    {
-        return in_array($this, [
-            self::PADDING,
-            self::PING,
-            self::ACK,
-            self::ACK_ECN,
-            self::CRYPTO,
-            self::CONNECTION_CLOSE,
-        ]);
-    }
-
-    /**
-     * 判断是否可以在Handshake包中发送
-     */
-    public function allowedInHandshake(): bool
-    {
-        return in_array($this, [
-            self::PADDING,
-            self::PING,
-            self::ACK,
-            self::ACK_ECN,
-            self::CRYPTO,
-            self::CONNECTION_CLOSE,
-        ]);
-    }
-
-    /**
-     * 判断是否可以在1-RTT包中发送
-     */
-    public function allowedIn1RTT(): bool
-    {
-        return true; // 1-RTT包可以包含所有帧类型
-    }
-
-    /**
-     * 获取帧类型的描述
+     * 获取帧类型描述
      */
     public function getDescription(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PADDING => '填充帧',
             self::PING => 'PING帧',
             self::ACK => '确认帧',
-            self::ACK_ECN => 'ECN确认帧',
+            self::ACK_ECN => 'ACK ECN帧',
             self::RESET_STREAM => '重置流帧',
             self::STOP_SENDING => '停止发送帧',
             self::CRYPTO => '加密帧',
             self::NEW_TOKEN => '新令牌帧',
-            self::STREAM, self::STREAM_FIN, self::STREAM_LEN, self::STREAM_LEN_FIN,
-            self::STREAM_OFF, self::STREAM_OFF_FIN, self::STREAM_OFF_LEN, self::STREAM_OFF_LEN_FIN => '流帧',
+            self::STREAM => '流帧',
+            self::STREAM_FIN => '流帧',
+            self::STREAM_LEN => '流长度帧',
+            self::STREAM_LEN_FIN => '流长度结束帧',
+            self::STREAM_OFF => '流偏移帧',
+            self::STREAM_OFF_FIN => '流偏移结束帧',
+            self::STREAM_OFF_LEN => '流偏移长度帧',
+            self::STREAM_OFF_LEN_FIN => '流偏移长度结束帧',
             self::MAX_DATA => '最大数据帧',
             self::MAX_STREAM_DATA => '最大流数据帧',
-            self::MAX_STREAMS => '最大流数量帧',
-            self::MAX_STREAMS_UNI => '最大单向流数量帧',
+            self::MAX_STREAMS => '最大流帧',
+            self::MAX_STREAMS_UNI => '最大单向流帧',
             self::DATA_BLOCKED => '数据阻塞帧',
             self::STREAM_DATA_BLOCKED => '流数据阻塞帧',
             self::STREAMS_BLOCKED => '流阻塞帧',
@@ -243,5 +150,140 @@ enum FrameType: int implements Itemable, Labelable, Selectable
     public function getLabel(): string
     {
         return $this->getDescription();
+    }
+
+    /**
+     * 检查是否需要可靠传递
+     */
+    public function needsReliableDelivery(): bool
+    {
+        return !in_array($this, [
+            self::PADDING,
+            self::PING,
+            self::PONG,
+            self::ACK,
+            self::ACK_ECN,
+            self::PATH_CHALLENGE,
+            self::PATH_RESPONSE,
+        ], true);
+    }
+
+    /**
+     * 检查是否为流量控制帧
+     */
+    public function isFlowControl(): bool
+    {
+        return in_array($this, [
+            self::MAX_DATA,
+            self::MAX_STREAM_DATA,
+            self::MAX_STREAMS,
+            self::MAX_STREAMS_UNI,
+            self::DATA_BLOCKED,
+            self::STREAM_DATA_BLOCKED,
+            self::STREAMS_BLOCKED,
+            self::STREAMS_BLOCKED_UNI,
+        ], true);
+    }
+
+    /**
+     * 检查是否为连接管理帧
+     */
+    public function isConnectionManagement(): bool
+    {
+        return in_array($this, [
+            self::CONNECTION_CLOSE,
+            self::CONNECTION_CLOSE_APP,
+            self::HANDSHAKE_DONE,
+            self::NEW_CONNECTION_ID,
+            self::RETIRE_CONNECTION_ID,
+            self::PATH_CHALLENGE,
+            self::PATH_RESPONSE,
+        ], true);
+    }
+
+    /**
+     * 检查是否为ACK帧
+     */
+    public function isAckFrame(): bool
+    {
+        return in_array($this, [self::ACK, self::ACK_ECN], true);
+    }
+
+    /**
+     * 检查流帧是否包含偏移
+     */
+    public function hasOffset(): bool
+    {
+        return in_array($this, [
+            self::STREAM_OFF,
+            self::STREAM_OFF_FIN,
+            self::STREAM_OFF_LEN,
+            self::STREAM_OFF_LEN_FIN,
+        ], true);
+    }
+
+    /**
+     * 检查流帧是否包含长度
+     */
+    public function hasLength(): bool
+    {
+        return in_array($this, [
+            self::STREAM_LEN,
+            self::STREAM_LEN_FIN,
+            self::STREAM_OFF_LEN,
+            self::STREAM_OFF_LEN_FIN,
+        ], true);
+    }
+
+    /**
+     * 检查流帧是否包含FIN标志
+     */
+    public function hasFin(): bool
+    {
+        return in_array($this, [
+            self::STREAM_FIN,
+            self::STREAM_LEN_FIN,
+            self::STREAM_OFF_FIN,
+            self::STREAM_OFF_LEN_FIN,
+        ], true);
+    }
+
+    /**
+     * 检查是否允许在Initial包中使用
+     */
+    public function allowedInInitial(): bool
+    {
+        return in_array($this, [
+            self::PADDING,
+            self::PING,
+            self::ACK,
+            self::ACK_ECN,
+            self::CRYPTO,
+            self::CONNECTION_CLOSE,
+        ], true);
+    }
+
+    /**
+     * 检查是否允许在Handshake包中使用
+     */
+    public function allowedInHandshake(): bool
+    {
+        return in_array($this, [
+            self::PADDING,
+            self::PING,
+            self::ACK,
+            self::ACK_ECN,
+            self::CRYPTO,
+            self::CONNECTION_CLOSE,
+        ], true);
+    }
+
+    /**
+     * 检查是否允许在1-RTT包中使用
+     */
+    public function allowedIn1RTT(): bool
+    {
+        // 1-RTT包中允许所有帧类型
+        return true;
     }
 }

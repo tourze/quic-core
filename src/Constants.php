@@ -14,7 +14,7 @@ final class Constants
 {
     // 协议版本
     public const VERSION_1 = 0x00000001;
-    public const VERSION_DRAFT_29 = 0xff00001d;
+    public const VERSION_DRAFT_29 = 0xFF00001D;
 
     // 包大小限制
     public const MIN_INITIAL_PACKET_SIZE = 1200;
@@ -65,12 +65,12 @@ final class Constants
     public const TRANSPORT_PARAM_INITIAL_MAX_STREAM_DATA_UNI = 0x07;
     public const TRANSPORT_PARAM_INITIAL_MAX_STREAMS_BIDI = 0x08;
     public const TRANSPORT_PARAM_INITIAL_MAX_STREAMS_UNI = 0x09;
-    public const TRANSPORT_PARAM_ACK_DELAY_EXPONENT = 0x0a;
-    public const TRANSPORT_PARAM_MAX_ACK_DELAY = 0x0b;
-    public const TRANSPORT_PARAM_DISABLE_ACTIVE_MIGRATION = 0x0c;
-    public const TRANSPORT_PARAM_PREFERRED_ADDRESS = 0x0d;
-    public const TRANSPORT_PARAM_ACTIVE_CONNECTION_ID_LIMIT = 0x0e;
-    public const TRANSPORT_PARAM_INITIAL_SOURCE_CONNECTION_ID = 0x0f;
+    public const TRANSPORT_PARAM_ACK_DELAY_EXPONENT = 0x0A;
+    public const TRANSPORT_PARAM_MAX_ACK_DELAY = 0x0B;
+    public const TRANSPORT_PARAM_DISABLE_ACTIVE_MIGRATION = 0x0C;
+    public const TRANSPORT_PARAM_PREFERRED_ADDRESS = 0x0D;
+    public const TRANSPORT_PARAM_ACTIVE_CONNECTION_ID_LIMIT = 0x0E;
+    public const TRANSPORT_PARAM_INITIAL_SOURCE_CONNECTION_ID = 0x0F;
     public const TRANSPORT_PARAM_RETRY_SOURCE_CONNECTION_ID = 0x10;
 
     // 默认传输参数值
@@ -123,7 +123,7 @@ final class Constants
         return in_array($version, [
             self::VERSION_1,
             self::VERSION_DRAFT_29,
-        ]);
+        ], true);
     }
 
     // 错误码定义 (RFC 9000 Section 20)
@@ -147,6 +147,8 @@ final class Constants
 
     /**
      * 获取支持的版本列表
+     *
+     * @return array<int>
      */
     public static function getSupportedVersions(): array
     {
@@ -158,6 +160,8 @@ final class Constants
 
     /**
      * 获取默认的传输参数
+     *
+     * @return array<string, int>
      */
     public static function getDefaultTransportParameters(): array
     {
@@ -175,4 +179,4 @@ final class Constants
             'active_connection_id_limit' => self::DEFAULT_ACTIVE_CONNECTION_ID_LIMIT,
         ];
     }
-} 
+}

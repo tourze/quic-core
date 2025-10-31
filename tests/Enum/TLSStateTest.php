@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Tests\Enum;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitEnum\AbstractEnumTestCase;
 use Tourze\QUIC\Core\Enum\TLSState;
 
 /**
  * TLSState 枚举单元测试
  *
- * @covers \Tourze\QUIC\Core\Enum\TLSState
+ * @internal
  */
-class TLSStateTest extends TestCase
+#[CoversClass(TLSState::class)]
+final class TLSStateTest extends AbstractEnumTestCase
 {
     /**
      * 测试枚举值
@@ -93,4 +95,34 @@ class TLSStateTest extends TestCase
         $this->assertSame('已连接', TLSState::CONNECTED->getDescription());
         $this->assertSame('已关闭', TLSState::CLOSED->getDescription());
     }
-} 
+
+    /**
+     * 测试 toArray 方法
+     */
+    public function testToArray(): void
+    {
+        $result = TLSState::START->toArray();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('开始', $result['label']);
+        $this->assertSame('start', $result['value']);
+    }
+
+    /**
+     * 测试具体的 toSelectItem 结果
+     */
+    public function testSpecificToSelectItemResults(): void
+    {
+        $result = TLSState::START->toSelectItem();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('开始', $result['label']);
+        $this->assertSame('start', $result['value']);
+
+        $result = TLSState::CONNECTED->toSelectItem();
+        $this->assertSame('已连接', $result['label']);
+        $this->assertSame('connected', $result['value']);
+    }
+}

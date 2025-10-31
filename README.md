@@ -1,10 +1,27 @@
 # QUIC Core Package
 
+[English](README.md) | [中文](README.zh-CN.md)
+
 [![PHP Version](https://img.shields.io/badge/PHP-8.1%2B-blue.svg)](https://php.net)
-[![Tests](https://img.shields.io/badge/Tests-152%20Passed-green.svg)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-186%20Passed-green.svg)](tests/)
 [![PHPStan](https://img.shields.io/badge/PHPStan-Level%20Max-brightgreen.svg)](https://github.com/phpstan/phpstan)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg)](tests/)
 
 QUIC协议核心基础库，提供QUIC协议的核心枚举、常量、工具类和异常处理机制。
+
+## 目录
+
+- [功能特性](#功能特性)
+- [安装](#安装)
+- [快速开始](#快速开始)
+- [规范遵循](#规范遵循)
+- [架构设计](#架构设计)
+- [测试](#测试)
+- [开发](#开发)
+- [性能](#性能)
+- [贡献](#贡献)
+- [许可证](#许可证)
 
 ## 功能特性
 
@@ -158,7 +175,7 @@ $maxConnectionIdLength = Constants::MAX_CONNECTION_ID_LENGTH;
 
 ### 包结构
 
-```
+```text
 src/
 ├── Enum/           # 核心枚举类
 ├── Exception/      # 异常处理类
@@ -182,8 +199,8 @@ vendor/bin/phpunit
 ```
 
 测试统计：
-- ✅ **152个测试** 全部通过
-- ✅ **857个断言** 全部成功
+- ✅ **186个测试** 全部通过
+- ✅ **898个断言** 全部成功
 - 📊 **100%** 核心功能覆盖
 
 ## 开发

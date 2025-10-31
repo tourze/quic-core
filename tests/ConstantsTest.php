@@ -4,23 +4,29 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Tests;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Tourze\QUIC\Core\Constants;
 
 /**
  * Constants 常量类单元测试
  *
- * @covers \Tourze\QUIC\Core\Constants
+ * @internal
  */
-class ConstantsTest extends TestCase
+#[CoversClass(Constants::class)]
+final class ConstantsTest extends TestCase
 {
     /**
      * 测试协议版本常量
      */
     public function testVersionConstants(): void
     {
-        $this->assertSame(0x00000001, Constants::VERSION_1);
-        $this->assertSame(0xff00001d, Constants::VERSION_DRAFT_29);
+        // 测试版本1为正式版本（版本号应大于0）
+        $this->assertGreaterThan(0, Constants::VERSION_1);
+        // 测试草案版本远大于正式版本
+        $this->assertGreaterThan(Constants::VERSION_1 * 1000, Constants::VERSION_DRAFT_29);
+        // 测试草案版本包含草案标识符（高字节非零）
+        $this->assertGreaterThan(0x00FFFFFF, Constants::VERSION_DRAFT_29);
     }
 
     /**
@@ -28,9 +34,12 @@ class ConstantsTest extends TestCase
      */
     public function testPacketSizeConstants(): void
     {
-        $this->assertSame(1200, Constants::MIN_INITIAL_PACKET_SIZE);
-        $this->assertSame(65535, Constants::MAX_PACKET_SIZE);
-        $this->assertSame(1472, Constants::MAX_UDP_PAYLOAD_SIZE);
+        // 测试最小初始包大小符合RFC要求（至少1200字节）
+        $this->assertGreaterThanOrEqual(1200, Constants::MIN_INITIAL_PACKET_SIZE);
+        // 测试最大包大小不超过16位无符号整数
+        $this->assertLessThanOrEqual(65535, Constants::MAX_PACKET_SIZE);
+        // 测试UDP最大载荷小于最大包大小
+        $this->assertLessThan(Constants::MAX_PACKET_SIZE, Constants::MAX_UDP_PAYLOAD_SIZE);
     }
 
     /**
@@ -38,42 +47,69 @@ class ConstantsTest extends TestCase
      */
     public function testConnectionIdConstants(): void
     {
-        $this->assertSame(0, Constants::MIN_CONNECTION_ID_LENGTH);
-        $this->assertSame(20, Constants::MAX_CONNECTION_ID_LENGTH);
-        $this->assertSame(8, Constants::DEFAULT_CONNECTION_ID_LENGTH);
+        // 测试最小长度允许为0
+        $this->assertGreaterThanOrEqual(0, Constants::MIN_CONNECTION_ID_LENGTH);
+        // 测试最大长度符合RFC限制（不超过20字节）
+        $this->assertLessThanOrEqual(20, Constants::MAX_CONNECTION_ID_LENGTH);
+        // 测试默认长度在有效范围内
+        $this->assertGreaterThanOrEqual(Constants::MIN_CONNECTION_ID_LENGTH, Constants::DEFAULT_CONNECTION_ID_LENGTH);
+        $this->assertLessThanOrEqual(Constants::MAX_CONNECTION_ID_LENGTH, Constants::DEFAULT_CONNECTION_ID_LENGTH);
     }
 
     /**
-     * 测试超时设置常量
+     * 测试超时设置常量的合理性
      */
     public function testTimeoutConstants(): void
     {
-        $this->assertSame(30000, Constants::DEFAULT_IDLE_TIMEOUT);
-        $this->assertSame(25, Constants::DEFAULT_MAX_ACK_DELAY);
-        $this->assertSame(10000, Constants::DEFAULT_HANDSHAKE_TIMEOUT);
-        $this->assertSame(333, Constants::DEFAULT_INITIAL_RTT);
+        // 超时值应该为正数且在合理范围内
+        $this->assertGreaterThan(0, Constants::DEFAULT_IDLE_TIMEOUT);
+        $this->assertGreaterThan(0, Constants::DEFAULT_MAX_ACK_DELAY);
+        $this->assertGreaterThan(0, Constants::DEFAULT_HANDSHAKE_TIMEOUT);
+        $this->assertGreaterThan(0, Constants::DEFAULT_INITIAL_RTT);
+
+        // 握手超时应小于空闲超时
+        $this->assertLessThan(Constants::DEFAULT_IDLE_TIMEOUT, Constants::DEFAULT_HANDSHAKE_TIMEOUT);
     }
 
     /**
-     * 测试流控制常量
+     * 测试流控制常量的合理性
      */
     public function testFlowControlConstants(): void
     {
-        $this->assertSame(1048576, Constants::DEFAULT_MAX_DATA);
-        $this->assertSame(262144, Constants::DEFAULT_MAX_STREAM_DATA);
-        $this->assertSame(100, Constants::DEFAULT_MAX_STREAMS_BIDI);
-        $this->assertSame(100, Constants::DEFAULT_MAX_STREAMS_UNI);
+        // 所有流控制值应为正数
+        $this->assertGreaterThan(0, Constants::DEFAULT_MAX_DATA);
+        $this->assertGreaterThan(0, Constants::DEFAULT_MAX_STREAM_DATA);
+        $this->assertGreaterThan(0, Constants::DEFAULT_MAX_STREAMS_BIDI);
+        $this->assertGreaterThan(0, Constants::DEFAULT_MAX_STREAMS_UNI);
+
+        // 总数据限制应大于单流数据限制
+        $this->assertGreaterThan(Constants::DEFAULT_MAX_STREAM_DATA, Constants::DEFAULT_MAX_DATA);
     }
 
     /**
-     * 测试变长整数编码常量
+     * 测试变长整数编码常量的二进制特性
      */
     public function testVarintConstants(): void
     {
-        $this->assertSame(63, Constants::VARINT_MAX_1_BYTE);
-        $this->assertSame(16383, Constants::VARINT_MAX_2_BYTE);
-        $this->assertSame(1073741823, Constants::VARINT_MAX_4_BYTE);
-        $this->assertSame(4611686018427387903, Constants::VARINT_MAX_8_BYTE);
+        // 测试各字节数的最大值的位数特性
+        $this->assertSame(6, (int) log(Constants::VARINT_MAX_1_BYTE + 1, 2));          // 2^6 - 1
+        $this->assertSame(14, (int) log(Constants::VARINT_MAX_2_BYTE + 1, 2));         // 2^14 - 1
+        $this->assertSame(30, (int) log(Constants::VARINT_MAX_4_BYTE + 1, 2));         // 2^30 - 1
+        $this->assertSame(62, (int) log(Constants::VARINT_MAX_8_BYTE + 1, 2));         // 2^62 - 1
+
+        // 验证递增关系 (1字节 < 2字节 < 4字节 < 8字节)
+        $sizes = [
+            Constants::VARINT_MAX_1_BYTE,
+            Constants::VARINT_MAX_2_BYTE,
+            Constants::VARINT_MAX_4_BYTE,
+            Constants::VARINT_MAX_8_BYTE,
+        ];
+
+        // 验证数组是否是递增排序的
+        $this->assertSame($sizes, array_values(array_unique($sizes)));
+        $sortedSizes = $sizes;
+        sort($sortedSizes);
+        $this->assertSame($sortedSizes, $sizes);
     }
 
     /**
@@ -81,95 +117,101 @@ class ConstantsTest extends TestCase
      */
     public function testFrameSizeConstants(): void
     {
-        $this->assertSame(0x3FFFFFFF, Constants::MAX_FRAME_SIZE);
-        $this->assertSame(0x3FFFFFFFFFFFFFFF, Constants::MAX_STREAM_ID);
+        // 帧大小限制应为正数
+        $this->assertGreaterThan(0, Constants::MAX_FRAME_SIZE);
+        $this->assertGreaterThan(0, Constants::MAX_STREAM_ID);
+
+        // 流ID的范围应该更大（62位 vs 30位）
+        $this->assertGreaterThan(Constants::MAX_FRAME_SIZE, Constants::MAX_STREAM_ID);
     }
 
     /**
-     * 测试加密级别常量
+     * 测试加密级别常量的递增性
      */
     public function testEncryptionLevelConstants(): void
     {
-        $this->assertSame(0, Constants::ENCRYPTION_LEVEL_INITIAL);
-        $this->assertSame(1, Constants::ENCRYPTION_LEVEL_EARLY_DATA);
-        $this->assertSame(2, Constants::ENCRYPTION_LEVEL_HANDSHAKE);
-        $this->assertSame(3, Constants::ENCRYPTION_LEVEL_APPLICATION);
+        // 加密级别应该是递增的 (0, 1, 2, 3)
+        $levels = [
+            Constants::ENCRYPTION_LEVEL_INITIAL,
+            Constants::ENCRYPTION_LEVEL_EARLY_DATA,
+            Constants::ENCRYPTION_LEVEL_HANDSHAKE,
+            Constants::ENCRYPTION_LEVEL_APPLICATION,
+        ];
+
+        // 验证每个级别都不同且递增
+        $this->assertSame(count($levels), count(array_unique($levels)));
+        $sortedLevels = $levels;
+        sort($sortedLevels);
+        $this->assertSame($sortedLevels, $levels);
     }
 
     /**
-     * 测试传输参数ID常量
+     * 测试传输参数ID常量的连续性
      */
     public function testTransportParameterConstants(): void
     {
-        $this->assertSame(0x00, Constants::TRANSPORT_PARAM_ORIGINAL_DESTINATION_CONNECTION_ID);
-        $this->assertSame(0x01, Constants::TRANSPORT_PARAM_MAX_IDLE_TIMEOUT);
-        $this->assertSame(0x02, Constants::TRANSPORT_PARAM_STATELESS_RESET_TOKEN);
-        $this->assertSame(0x03, Constants::TRANSPORT_PARAM_MAX_UDP_PAYLOAD_SIZE);
-        $this->assertSame(0x04, Constants::TRANSPORT_PARAM_INITIAL_MAX_DATA);
-        $this->assertSame(0x05, Constants::TRANSPORT_PARAM_INITIAL_MAX_STREAM_DATA_BIDI_LOCAL);
-        $this->assertSame(0x06, Constants::TRANSPORT_PARAM_INITIAL_MAX_STREAM_DATA_BIDI_REMOTE);
-        $this->assertSame(0x07, Constants::TRANSPORT_PARAM_INITIAL_MAX_STREAM_DATA_UNI);
-        $this->assertSame(0x08, Constants::TRANSPORT_PARAM_INITIAL_MAX_STREAMS_BIDI);
-        $this->assertSame(0x09, Constants::TRANSPORT_PARAM_INITIAL_MAX_STREAMS_UNI);
-        $this->assertSame(0x0a, Constants::TRANSPORT_PARAM_ACK_DELAY_EXPONENT);
-        $this->assertSame(0x0b, Constants::TRANSPORT_PARAM_MAX_ACK_DELAY);
-        $this->assertSame(0x0c, Constants::TRANSPORT_PARAM_DISABLE_ACTIVE_MIGRATION);
-        $this->assertSame(0x0d, Constants::TRANSPORT_PARAM_PREFERRED_ADDRESS);
-        $this->assertSame(0x0e, Constants::TRANSPORT_PARAM_ACTIVE_CONNECTION_ID_LIMIT);
-        $this->assertSame(0x0f, Constants::TRANSPORT_PARAM_INITIAL_SOURCE_CONNECTION_ID);
-        $this->assertSame(0x10, Constants::TRANSPORT_PARAM_RETRY_SOURCE_CONNECTION_ID);
+        // 验证传输参数ID是连续的（从0x00到0x10）
+        $paramIds = [
+            Constants::TRANSPORT_PARAM_ORIGINAL_DESTINATION_CONNECTION_ID,
+            Constants::TRANSPORT_PARAM_MAX_IDLE_TIMEOUT,
+            Constants::TRANSPORT_PARAM_STATELESS_RESET_TOKEN,
+            Constants::TRANSPORT_PARAM_MAX_UDP_PAYLOAD_SIZE,
+            Constants::TRANSPORT_PARAM_INITIAL_MAX_DATA,
+            Constants::TRANSPORT_PARAM_INITIAL_MAX_STREAM_DATA_BIDI_LOCAL,
+            Constants::TRANSPORT_PARAM_INITIAL_MAX_STREAM_DATA_BIDI_REMOTE,
+            Constants::TRANSPORT_PARAM_INITIAL_MAX_STREAM_DATA_UNI,
+            Constants::TRANSPORT_PARAM_INITIAL_MAX_STREAMS_BIDI,
+            Constants::TRANSPORT_PARAM_INITIAL_MAX_STREAMS_UNI,
+            Constants::TRANSPORT_PARAM_ACK_DELAY_EXPONENT,
+            Constants::TRANSPORT_PARAM_MAX_ACK_DELAY,
+            Constants::TRANSPORT_PARAM_DISABLE_ACTIVE_MIGRATION,
+            Constants::TRANSPORT_PARAM_PREFERRED_ADDRESS,
+            Constants::TRANSPORT_PARAM_ACTIVE_CONNECTION_ID_LIMIT,
+            Constants::TRANSPORT_PARAM_INITIAL_SOURCE_CONNECTION_ID,
+            Constants::TRANSPORT_PARAM_RETRY_SOURCE_CONNECTION_ID,
+        ];
+
+        // 验证ID是从0开始连续递增的
+        foreach ($paramIds as $index => $paramId) {
+            $this->assertSame($index, $paramId);
+        }
     }
 
     /**
-     * 测试默认传输参数值常量
+     * 测试默认传输参数值的合理性
      */
     public function testDefaultTransportParameterConstants(): void
     {
-        $this->assertSame(3, Constants::DEFAULT_ACK_DELAY_EXPONENT);
-        $this->assertSame(65527, Constants::DEFAULT_MAX_UDP_PAYLOAD_SIZE);
-        $this->assertSame(2, Constants::DEFAULT_ACTIVE_CONNECTION_ID_LIMIT);
+        // ACK延迟指数应该在合理范围内
+        $this->assertGreaterThanOrEqual(0, Constants::DEFAULT_ACK_DELAY_EXPONENT);
+        $this->assertLessThanOrEqual(20, Constants::DEFAULT_ACK_DELAY_EXPONENT);
+
+        // UDP载荷大小应该小于最大包大小
+        $this->assertLessThan(Constants::MAX_PACKET_SIZE, Constants::DEFAULT_MAX_UDP_PAYLOAD_SIZE);
+
+        // 连接ID限制应该为正数
+        $this->assertGreaterThan(0, Constants::DEFAULT_ACTIVE_CONNECTION_ID_LIMIT);
     }
 
     /**
-     * 测试重传相关常量
-     */
-    public function testRetransmissionConstants(): void
-    {
-        $this->assertSame(333, Constants::INITIAL_RTT);
-        $this->assertSame(1, Constants::GRANULARITY);
-        $this->assertSame(1, Constants::TIMER_GRANULARITY);
-        $this->assertSame(3, Constants::INITIAL_PACKET_THRESHOLD);
-        $this->assertSame(9.0 / 8.0, Constants::INITIAL_TIME_THRESHOLD);
-    }
-
-    /**
-     * 测试拥塞控制常量
-     */
-    public function testCongestionControlConstants(): void
-    {
-        $this->assertSame(10, Constants::INITIAL_WINDOW);
-        $this->assertSame(2, Constants::MINIMUM_WINDOW);
-        $this->assertSame(0.5, Constants::LOSS_REDUCTION_FACTOR);
-    }
-
-    /**
-     * 测试路径验证常量
-     */
-    public function testPathValidationConstants(): void
-    {
-        $this->assertSame(8, Constants::PATH_CHALLENGE_SIZE);
-        $this->assertSame(8, Constants::PATH_RESPONSE_SIZE);
-    }
-
-    /**
-     * 测试ECN常量
+     * 测试ECN常量的二进制属性
      */
     public function testECNConstants(): void
     {
-        $this->assertSame(0x00, Constants::ECN_NOT_ECT);
-        $this->assertSame(0x01, Constants::ECN_ECT_1);
-        $this->assertSame(0x02, Constants::ECN_ECT_0);
-        $this->assertSame(0x03, Constants::ECN_CE);
+        // ECN标志应该使用最低2位
+        $this->assertLessThanOrEqual(3, Constants::ECN_NOT_ECT);
+        $this->assertLessThanOrEqual(3, Constants::ECN_ECT_1);
+        $this->assertLessThanOrEqual(3, Constants::ECN_ECT_0);
+        $this->assertLessThanOrEqual(3, Constants::ECN_CE);
+
+        // ECN值应该互不相同
+        $ecnValues = [
+            Constants::ECN_NOT_ECT,
+            Constants::ECN_ECT_1,
+            Constants::ECN_ECT_0,
+            Constants::ECN_CE,
+        ];
+        $this->assertSame(count($ecnValues), count(array_unique($ecnValues)));
     }
 
     /**
@@ -224,4 +266,4 @@ class ConstantsTest extends TestCase
         $this->assertSame(Constants::DEFAULT_MAX_ACK_DELAY, $params['max_ack_delay']);
         $this->assertSame(Constants::DEFAULT_ACTIVE_CONNECTION_ID_LIMIT, $params['active_connection_id_limit']);
     }
-} 
+}

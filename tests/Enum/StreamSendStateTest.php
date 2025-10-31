@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Tests\Enum;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitEnum\AbstractEnumTestCase;
 use Tourze\QUIC\Core\Enum\StreamSendState;
 
 /**
  * StreamSendState 枚举单元测试
  *
- * @covers \Tourze\QUIC\Core\Enum\StreamSendState
+ * @internal
  */
-class StreamSendStateTest extends TestCase
+#[CoversClass(StreamSendState::class)]
+final class StreamSendStateTest extends AbstractEnumTestCase
 {
     /**
      * 测试枚举值
@@ -33,7 +35,7 @@ class StreamSendStateTest extends TestCase
     {
         $this->assertTrue(StreamSendState::READY->canSendData());
         $this->assertTrue(StreamSendState::SEND->canSendData());
-        $this->assertTrue(StreamSendState::DATA_SENT->canSendData());
+        $this->assertFalse(StreamSendState::DATA_SENT->canSendData());
         $this->assertFalse(StreamSendState::RESET_SENT->canSendData());
         $this->assertFalse(StreamSendState::RESET_RECVD->canSendData());
     }
@@ -73,4 +75,34 @@ class StreamSendStateTest extends TestCase
         $this->assertSame('已发送重置', StreamSendState::RESET_SENT->getDescription());
         $this->assertSame('已收到重置确认', StreamSendState::RESET_RECVD->getDescription());
     }
-} 
+
+    /**
+     * 测试 toArray 方法
+     */
+    public function testToArray(): void
+    {
+        $result = StreamSendState::READY->toArray();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('准备发送', $result['label']);
+        $this->assertSame('ready', $result['value']);
+    }
+
+    /**
+     * 测试具体的 toSelectItem 结果
+     */
+    public function testSpecificToSelectItemResults(): void
+    {
+        $result = StreamSendState::READY->toSelectItem();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('准备发送', $result['label']);
+        $this->assertSame('ready', $result['value']);
+
+        $result = StreamSendState::SEND->toSelectItem();
+        $this->assertSame('正在发送', $result['label']);
+        $this->assertSame('send', $result['value']);
+    }
+}

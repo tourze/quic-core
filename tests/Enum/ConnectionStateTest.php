@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Tests\Enum;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitEnum\AbstractEnumTestCase;
 use Tourze\QUIC\Core\Enum\ConnectionState;
 
 /**
  * ConnectionState 枚举单元测试
  *
- * @covers \Tourze\QUIC\Core\Enum\ConnectionState
+ * @internal
  */
-class ConnectionStateTest extends TestCase
+#[CoversClass(ConnectionState::class)]
+final class ConnectionStateTest extends AbstractEnumTestCase
 {
     /**
      * 测试枚举值
@@ -200,4 +202,38 @@ class ConnectionStateTest extends TestCase
         $this->assertSame('排空中', ConnectionState::DRAINING->getDescription());
         $this->assertSame('已关闭', ConnectionState::CLOSED->getDescription());
     }
-} 
+
+    /**
+     * 测试 toArray 方法
+     */
+    public function testToArray(): void
+    {
+        $result = ConnectionState::NEW->toArray();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('新建', $result['label']);
+        $this->assertSame('new', $result['value']);
+
+        $result = ConnectionState::CONNECTED->toArray();
+        $this->assertSame('已连接', $result['label']);
+        $this->assertSame('connected', $result['value']);
+    }
+
+    /**
+     * 测试具体的 toSelectItem 结果
+     */
+    public function testSpecificToSelectItemResults(): void
+    {
+        $result = ConnectionState::NEW->toSelectItem();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('新建', $result['label']);
+        $this->assertSame('new', $result['value']);
+
+        $result = ConnectionState::CONNECTED->toSelectItem();
+        $this->assertSame('已连接', $result['label']);
+        $this->assertSame('connected', $result['value']);
+    }
+}

@@ -16,57 +16,60 @@ use Tourze\EnumExtra\SelectTrait;
  * 定义ECN功能的验证状态
  * 参考：https://tools.ietf.org/html/rfc9000#section-13.4
  */
-enum ECNState: string implements Itemable, Labelable, Selectable
+enum ECNState: string implements Labelable, Itemable, Selectable
 {
     use ItemTrait;
     use SelectTrait;
-    case TESTING = 'testing';     // 正在测试ECN功能
-    case UNKNOWN = 'unknown';     // ECN状态未知
-    case CAPABLE = 'capable';     // ECN功能可用
-    case FAILED = 'failed';       // ECN功能不可用
+
+    case TESTING = 'testing';
+    case UNKNOWN = 'unknown';
+    case CAPABLE = 'capable';
+    case FAILED = 'failed';
+
+    public function getLabel(): string
+    {
+        return match ($this) {
+            self::TESTING => '测试中',
+            self::UNKNOWN => '未知',
+            self::CAPABLE => '支持',
+            self::FAILED => '失败',
+        };
+    }
 
     /**
-     * 判断是否支持ECN
+     * 检查ECN是否可用
      */
     public function isCapable(): bool
     {
-        return $this === self::CAPABLE;
+        return self::CAPABLE === $this;
     }
 
     /**
-     * 判断是否正在测试
+     * 检查是否正在测试ECN
      */
     public function isTesting(): bool
     {
-        return $this === self::TESTING;
+        return self::TESTING === $this;
     }
 
     /**
-     * 判断ECN是否失败
+     * 检查ECN是否失败
      */
     public function isFailed(): bool
     {
-        return $this === self::FAILED;
+        return self::FAILED === $this;
     }
 
     /**
-     * 获取状态的中文描述
+     * 获取状态描述
      */
     public function getDescription(): string
     {
-        return match($this) {
+        return match ($this) {
             self::TESTING => '正在测试ECN',
             self::UNKNOWN => 'ECN状态未知',
             self::CAPABLE => 'ECN功能可用',
             self::FAILED => 'ECN功能不可用',
         };
-    }
-
-    /**
-     * 获取标签 (EnumExtra 接口要求)
-     */
-    public function getLabel(): string
-    {
-        return $this->getDescription();
     }
 }

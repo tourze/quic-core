@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Tests\Enum;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitEnum\AbstractEnumTestCase;
 use Tourze\QUIC\Core\Enum\QuicError;
 
 /**
  * QuicError 枚举单元测试
  *
- * @covers \Tourze\QUIC\Core\Enum\QuicError
+ * @internal
  */
-class QuicErrorTest extends TestCase
+#[CoversClass(QuicError::class)]
+final class QuicErrorTest extends AbstractEnumTestCase
 {
     /**
      * 测试枚举值
@@ -92,4 +94,34 @@ class QuicErrorTest extends TestCase
         $this->assertSame('应用层错误', QuicError::APPLICATION_ERROR->getDescription());
         $this->assertSame('加密错误', QuicError::CRYPTO_ERROR->getDescription());
     }
-} 
+
+    /**
+     * 测试 toArray 方法
+     */
+    public function testToArray(): void
+    {
+        $result = QuicError::NO_ERROR->toArray();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('无错误', $result['label']);
+        $this->assertSame(0, $result['value']);
+    }
+
+    /**
+     * 测试具体的 toSelectItem 结果
+     */
+    public function testSpecificToSelectItemResults(): void
+    {
+        $result = QuicError::NO_ERROR->toSelectItem();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('无错误', $result['label']);
+        $this->assertSame(0x00, $result['value']);
+
+        $result = QuicError::INTERNAL_ERROR->toSelectItem();
+        $this->assertSame('内部错误', $result['label']);
+        $this->assertSame(0x01, $result['value']);
+    }
+}

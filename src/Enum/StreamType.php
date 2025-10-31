@@ -20,6 +20,7 @@ enum StreamType: int implements Itemable, Labelable, Selectable
 {
     use ItemTrait;
     use SelectTrait;
+
     case CLIENT_BIDI = 0x00;    // 客户端发起的双向流
     case SERVER_BIDI = 0x01;    // 服务端发起的双向流
     case CLIENT_UNI = 0x02;     // 客户端发起的单向流
@@ -32,8 +33,8 @@ enum StreamType: int implements Itemable, Labelable, Selectable
     {
         return in_array($this, [
             self::CLIENT_BIDI,
-            self::SERVER_BIDI
-        ]);
+            self::SERVER_BIDI,
+        ], true);
     }
 
     /**
@@ -43,8 +44,8 @@ enum StreamType: int implements Itemable, Labelable, Selectable
     {
         return in_array($this, [
             self::CLIENT_UNI,
-            self::SERVER_UNI
-        ]);
+            self::SERVER_UNI,
+        ], true);
     }
 
     /**
@@ -54,8 +55,8 @@ enum StreamType: int implements Itemable, Labelable, Selectable
     {
         return in_array($this, [
             self::CLIENT_BIDI,
-            self::CLIENT_UNI
-        ]);
+            self::CLIENT_UNI,
+        ], true);
     }
 
     /**
@@ -65,8 +66,8 @@ enum StreamType: int implements Itemable, Labelable, Selectable
     {
         return in_array($this, [
             self::SERVER_BIDI,
-            self::SERVER_UNI
-        ]);
+            self::SERVER_UNI,
+        ], true);
     }
 
     /**
@@ -83,11 +84,11 @@ enum StreamType: int implements Itemable, Labelable, Selectable
     }
 
     /**
-     * 获取类型的中文描述
+     * 获取流类型描述
      */
     public function getDescription(): string
     {
-        return match($this) {
+        return match ($this) {
             self::CLIENT_BIDI => '客户端双向流',
             self::SERVER_BIDI => '服务端双向流',
             self::CLIENT_UNI => '客户端单向流',

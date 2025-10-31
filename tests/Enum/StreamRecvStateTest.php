@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Tourze\QUIC\Core\Tests\Enum;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitEnum\AbstractEnumTestCase;
 use Tourze\QUIC\Core\Enum\StreamRecvState;
 
 /**
  * StreamRecvState 枚举单元测试
  *
- * @covers \Tourze\QUIC\Core\Enum\StreamRecvState
+ * @internal
  */
-class StreamRecvStateTest extends TestCase
+#[CoversClass(StreamRecvState::class)]
+final class StreamRecvStateTest extends AbstractEnumTestCase
 {
     /**
      * 测试枚举值
@@ -73,4 +75,34 @@ class StreamRecvStateTest extends TestCase
         $this->assertSame('收到重置流', StreamRecvState::RESET_RECVD->getDescription());
         $this->assertSame('应用已读取重置', StreamRecvState::RESET_READ->getDescription());
     }
-} 
+
+    /**
+     * 测试 toArray 方法
+     */
+    public function testToArray(): void
+    {
+        $result = StreamRecvState::RECV->toArray();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('可以接收数据', $result['label']);
+        $this->assertSame('recv', $result['value']);
+    }
+
+    /**
+     * 测试具体的 toSelectItem 结果
+     */
+    public function testSpecificToSelectItemResults(): void
+    {
+        $result = StreamRecvState::RECV->toSelectItem();
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('label', $result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertSame('可以接收数据', $result['label']);
+        $this->assertSame('recv', $result['value']);
+
+        $result = StreamRecvState::SIZE_KNOWN->toSelectItem();
+        $this->assertSame('已知最终大小', $result['label']);
+        $this->assertSame('size_known', $result['value']);
+    }
+}
