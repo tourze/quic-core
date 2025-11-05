@@ -75,7 +75,6 @@ final class ConnectionId
             throw ConnectionIdException::minGreaterThanMax($minLength, $maxLength);
         }
 
-        // @phpstan-ignore-next-line
         $length = random_int($minLength, $maxLength);
 
         return self::generate($length);
